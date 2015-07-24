@@ -14,7 +14,7 @@
 
 #define CONTRY 5
 
-#define SERVERIP  	"192.168.1.103"
+#define SERVERIP  	"192.168.200.147"
 //#define SERVERIP  	"192.168.1.113"
 #define PORT 		1234
 
