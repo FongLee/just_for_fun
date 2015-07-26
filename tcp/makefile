@@ -53,4 +53,4 @@ p2pserver: $(OBJS) p2pserver.o
 	$(CC) $(CFLAGS) $(INCS) $< -o $@
 
 clean:
-	rm -f *.o  $(BIN)
+	rm -f $(OBJS) *.o  $(BIN) 

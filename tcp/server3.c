@@ -438,8 +438,13 @@ int my_lock_init()
 	mptr = shmat(shmid, NULL, 0);
 	if (mptr == (void *) -1)
 		return -1;
+
+	pthread_mutexattr_t mattr;
+	pthread_mutexattr_init(&mattr);
+	pthread_mutexattr_setpshared(&mattr, PTHREAD_PROCESS_SHARED);
+
 	int res;
-	res = pthread_mutex_init(mptr, NULL);
+	res = pthread_mutex_init(mptr, &mattr);
 	if (res < 0)
 		return -1;
 

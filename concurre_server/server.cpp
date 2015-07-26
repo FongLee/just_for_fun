@@ -16,38 +16,60 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <pthread.h>
- #include <sys/select.h>
+#include <sys/select.h>
+#include <stdbool.h>
+#include <semaphore.h>
+
+#include <queue>
 
 #include "commsocket.h"
 #include "error.h"
 
+using namespace std;
 #define PORT 		1234
 
+void usage(char *argv);
 void my_getopt(int argc, char **argv);
-void child_process(int newfd);
+void thread_pool_init();
+void thread_make(int i);
+void * thread_main(void *arg);
+void connection_handler(int newfd);
 void pr_cpu_time(void);
 int register_sig_handler();
 void my_handler(int num);
-void sig_int_handler(int num);
-void usage(char *argv);
-void * thread_main(void *arg);
 
 
+const int MAXTHREADS = 50;
+const int MINTHREADS = 15;
+const int MIN_IDLETHREADS = 2;
+const int ADD_THREADS = 5;
 
 typedef struct
 {
+	bool thread_flag;
 	pthread_t thread_tid;
 	long thread_count;
-} thread_t;
+} thread_info_t;
+
+typedef struct thread_pool
+{
+	int max_threads; 
+	int curr_threads;
+	int idle_threads;
+	pthread_mutex_t mutex;
+	pthread_cond_t cond;
+	thread_info_t *pchild;
+} thread_pool_t;
 
 int childnum = 1;
-thread_t *ptr;
-int socket_fd;
 
-pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+
+queue<int> childfd;
+
+thread_pool_t my_pool;
 
 /**
- * Leader/Follower mode, create thread's poll to handle (+lock) ,child thread select.
+ * main thread handle new connection ,  thread poll is to handle.
  * @return  0
  */
 int main(int argc, char **argv)
@@ -60,30 +82,83 @@ int main(int argc, char **argv)
 
 	my_getopt(argc, argv);
 
-	struct sigaction myact;
-	myact.sa_handler = sig_int_handler;
-	if (sigaction(SIGINT, &myact, NULL) < 0)
-		err_sys("sigaction err");
-
-	
+	int socket_fd;
 	res = srv_socket_init(&socket_fd, 50, PORT);
 	if (res != 0)
 		err_sys("srv_socket_init err");
 	
-	ptr= (thread_t *) malloc(sizeof(thread_t) * childnum);
 
-	for (int i = 0; i < childnum; i++)
-	{
-		res = pthread_create(&ptr[i].thread_tid, NULL, thread_main, (void *)i);
-		if (res < 0)
-			err_sys("pthread_create is err");
-	}
+	thread_pool_init();
 
+	int num;
+	int myfd;
 	while(1)
-		pause();
+	{
+		while(1)
+		{
+			res = srv_socket_accept(socket_fd, &myfd, 5);
+			if (res != 0)
+			{
+				if (res == SOCKET_TIMEOUT_ERR)
+				{
+					fprintf(stderr, "server socket accept time out: %d\n", res);
+				}
+				else 
+				{
+					fprintf(stderr, "srv_socket_accept err: %d\n", res);
+				}
+				continue;
+			}
+			else 
+			 	break;		
+		}
+
+		pthread_mutex_lock(&my_pool.mutex);
+
+		childfd.push(myfd);
+		num = my_pool.idle_threads - childfd.size();
+		if (num < MIN_IDLETHREADS && my_pool.curr_threads <= MAXTHREADS - 5)
+		{			
+				int j = 0;
+				int k = 0;
+				while (j < MAXTHREADS)
+				{
+					
+					if (my_pool.pchild[j].thread_flag == false)
+					{
+						//my_pool.pchild[j].thread_flag = true;
+						thread_make(j);
+						//err_ret("make a new pthread");
+						k++;
+					}
+					if (k == ADD_THREADS )
+						break;
+					
+					j++;
+				}
+
+				//err_ret("make   pthread");
+		}
+	
+		pthread_cond_signal(&my_pool.cond);
+
+		pthread_mutex_unlock(&my_pool.mutex);
+
+	}
 
 	return 0;
 }
+
+/**
+ * usage of the programe
+ * @param argv argument of main
+ */
+void usage(char *argv)
+{
+	fprintf(stdout, "%s usage: %s [-t processnum]\n", argv,argv);
+	exit(0);
+}
+
 
 /**
  * parse argument of main
@@ -107,6 +182,36 @@ void my_getopt(int argc, char **argv)
 	} 
 }
 
+void thread_pool_init()
+{
+	my_pool.max_threads = MAXTHREADS;
+	my_pool.curr_threads = MINTHREADS;
+	my_pool.idle_threads = MINTHREADS;
+	pthread_mutex_init(&my_pool.mutex, NULL);
+	pthread_cond_init(&my_pool.cond, NULL);
+	my_pool.pchild= (thread_info_t *) malloc(sizeof(thread_info_t) * MAXTHREADS);
+	memset(my_pool.pchild, 0, sizeof(thread_info_t) * MAXTHREADS);
+	for (int i = 0; i < MAXTHREADS; i++)
+		my_pool.pchild[i].thread_flag = false;
+
+	for (int i = 0; i < MINTHREADS; i++)
+	{
+		thread_make(i);
+	}
+}
+
+void thread_make(int i)
+{
+	int res;
+	res = pthread_create(&my_pool.pchild[i].thread_tid, NULL, thread_main, (void *)i);
+	if (res < 0)
+		err_ret("pthread_create is err");
+
+	my_pool.pchild[i].thread_flag = true;
+
+}
+
+
 /**
  * main thread
  * @param  arg number i
@@ -117,49 +222,52 @@ void * thread_main(void *arg)
 	pthread_detach(pthread_self());
 	int tidnum = (int)arg; 
 	int newfd;
-	pthread_t tid = pthread_self();
-	int res;
-
 	while(1)
 	{
-		pthread_mutex_lock(&lock);
-		while(1)
-		{
-			res = srv_socket_accept(socket_fd, &newfd, 5);
-			if (res != 0)
-			{
-				if (res == SOCKET_TIMEOUT_ERR)
-				{
-					fprintf(stderr, "id is %u, server socket accept time out: %d\n", tid, res);
-				}
-				else 
-				{
-					fprintf(stderr, "id is %u, srv_socket_accept err: %d\n", tid, res);
-				}
-				continue;
-			}
-			else 
-			 	break;		
-		}
+		pthread_mutex_lock(&my_pool.mutex);
+		while(childfd.empty())
+			pthread_cond_wait(&my_pool.cond, &my_pool.mutex);
 
-		pthread_mutex_unlock(&lock);
-		ptr[tidnum].thread_count++;
+		newfd = childfd.front();
+		childfd.pop();
+
+		my_pool.idle_threads--;
+		// my_pool.pchild[tidnum].thread_count++; 
+		pthread_mutex_unlock(&my_pool.mutex);
+
+		my_pool.pchild[tidnum].thread_count++;
+	
 		fprintf(stdout, "\n");
-		fprintf(stdout, "id is %u accept success.\n", tid);
-		child_process(newfd);
+		fprintf(stdout, "the %dst thread accept success.\n", (unsigned int)tidnum);
+		connection_handler(newfd);
 		srv_socket_close(&newfd);	
-	}
+		
+		pthread_mutex_lock(&my_pool.mutex);
+		
+		int num = my_pool.idle_threads - childfd.size();
+		if (num > my_pool.curr_threads / 2 && my_pool.curr_threads > MINTHREADS)
+		{
+			my_pool.curr_threads--;
+			my_pool.idle_threads--;
+			my_pool.pchild[tidnum].thread_flag = false;
+			pthread_mutex_unlock(&my_pool.mutex);
 
-	return NULL;
+			return NULL;
+		}
+		my_pool.idle_threads++;
+		pthread_mutex_unlock(&my_pool.mutex);
+
+	}
+		return NULL;
 
 }
 
 /**
  * child process functon
- * @param  newfd coonection file descriptor
+ * @param  newfd connection file descriptor
  * @return       void
  */
-void child_process(int newfd)
+void connection_handler(int newfd)
 {
 	int res;
 	char rec_buf[MAX_BUF_SIZE];
@@ -173,10 +281,15 @@ void child_process(int newfd)
 		res = srv_socket_rev(newfd, rec_buf, &buflen, 5);
 		if (res != 0)
 		{
+			int k = 0;
 			//because time out,continue to receive buffer 
 			if (res == SOCKET_TIMEOUT_ERR)
 			{
+				k++;
+				if (k == 3)
+					return ;
 				fprintf(stdout, "read time out\n");
+				
 				continue ;
 			}
 			else if (res == SOCKET_UNCOON_ERR)
@@ -231,7 +344,6 @@ void child_process(int newfd)
 				
 			}
 
-	
 		}	
 	}
 }
@@ -259,7 +371,7 @@ void pr_cpu_time(void)
 	sys = myusage.ru_stime.tv_sec + myusage.ru_stime.tv_usec/1e6;
 	sys += childusage.ru_stime.tv_sec + childusage.ru_stime.tv_usec/1e6;
 
-	fprintf(stdout, "user time is %g, sys time is %g , total is %g s\n", user, sys, user + sys);
+	fprintf(stdout, "user time is %g s, sys time is %g s, total is %g s\n", user, sys, user + sys);
 }
 
 /**
@@ -272,13 +384,18 @@ int register_sig_handler()
 	myact.sa_handler = my_handler;
 
 	if (sigaction(SIGPIPE, &myact, NULL) < 0)
-	{ 
-		fprintf(stderr, "sigaction is err : %s\n", strerror(errno));
+	{
+		err_ret("sigaction is err");
+		return -1;
+	}
+
+	if (sigaction(SIGINT, &myact, NULL) < 0)
+	{
+		err_ret("sigaction err");
 		return -1;
 	}
 
 	return 0;
-
 }
 
 /**
@@ -300,6 +417,7 @@ void my_handler(int num)
 		}	
 		errno = store_errno;
 	}
+
 	if (num == SIGPIPE)
 	{
 		fprintf(stdout, "pid is %d, get the signal SIGPIPS.\n", getpid());
@@ -307,15 +425,6 @@ void my_handler(int num)
 		//exit(0);
 	}
 
-}
-
-/**
- * handler of signal SIGINT
- * @param num number signal 
- */
-void sig_int_handler(int num)
-{
-	int res;
 	if (num == SIGINT)
 	{
 		fprintf(stdout, "pid is %d, get signal SIGINT\n", getpid());
@@ -326,23 +435,20 @@ void sig_int_handler(int num)
 		pr_cpu_time();
 		fprintf(stdout, "number of every process accept connection:\n");
 		long sum = 0;
-		for (int i = 0; i < childnum; i++)
+		for (int i = 0; i < MAXTHREADS; i++)
 		{
-			sum += ptr[i].thread_count;
-			fprintf(stdout, "%ld ", ptr[i].thread_count);
+			sum += my_pool.pchild[i].thread_count;
+			fprintf(stdout, "%ld ", my_pool.pchild[i].thread_count);
 		}
-		fprintf(stdout, "total connecion is %ld\n", sum);
+
+		fprintf(stdout, "\ntotal connection is %ld\n", sum);
+		fprintf(stdout, "number of current thread is %d, number of idle_threads is %d\n", \
+					my_pool.curr_threads, my_pool.idle_threads);
 		exit(0);
 	}
+
 }
 
-/**
- * usage of the programe
- * @param argv argument of main
- */
-void usage(char *argv)
-{
-	fprintf(stdout, "%s usage: %s [-t processnum]\n", argv,argv);
-	exit(0);
-}
+
+
 
