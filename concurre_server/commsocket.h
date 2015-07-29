@@ -9,6 +9,25 @@
 #define SOCKET_MALLOC_ERR	(SOCKET_BASE_ERR + 3)
 #define SOCKET_UNCOON_ERR		(SOCKET_BASE_ERR + 4)
 
+
+/**
+ * write buf into fd, untial all the buf is sended
+ * @param  fd    file descriptor to write
+ * @param  buf   buffer to write
+ * @param  count length of buffer 
+ * @return       success: equal to count; err: less than count
+ */
+ssize_t writen(int fd, void *buf, size_t count);
+
+/**
+ * read buf from fd, until length of buf is count
+ * @param  fd    file descriptor to read
+ * @param  buf   buffer from reading
+ * @param  count count of buffer
+ * @return       read length : 0-count
+ */
+ ssize_t readn(int fd, void * buf, size_t count);
+
 /**
  * socket of client initialization
  * @param  sockhandle sock handle structure 

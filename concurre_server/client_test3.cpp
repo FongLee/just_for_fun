@@ -12,10 +12,11 @@
 #include <sys/wait.h>
 
 #include "commsocket.h"
+#include "error.h"
 
 #define CONTRY 5
 
-#define SERVERIP  	"192.168.200.147"
+#define SERVERIP  	"192.168.1.102"
 //#define SERVERIP  	"192.168.1.113"
 #define PORT 		1234
 
@@ -73,7 +74,7 @@ int main(int argc, char **argv)
 	int connfd;
 	char send_buf[MAX_BUF_SIZE] = {0};
 	char rec_buf[MAX_BUF_SIZE] = {0};
-	int rvlen;
+
 	int pid = 0;
 	for (int j = 0; j < pronum; j++)
 	{
@@ -102,61 +103,27 @@ int main(int argc, char **argv)
 
 				fprintf(stdout, "pid  is %d, %dst connection success.\n",mypid,  i+1);
 				sprintf(send_buf, "pid  is %d, %dst connection 's buf", mypid, i+1);
-				res = clt_socket_send(sockhandler, connfd, send_buf, strlen(send_buf));
-				if (res != 0)
+				res = writen(connfd, send_buf, strlen(send_buf));
+				//res = clt_socket_send(sockhandler, connfd, send_buf, strlen(send_buf));
+				if (res < 0)
 				{
-					if (res == SOCKET_TIMEOUT_ERR)
-					{
-						fprintf(stderr, "pid  is %d, %dst connection write time out.\n",mypid,  i+1);
-						
-					}
-					if (res == SOCKET_UNCOON_ERR)
-					{
-						fprintf(stderr, "pid  is %d, %dst connection server is closed.\n", mypid,  i+1);
-						//clt_socket_closeconn(&connfd);
-						
-						//exit(0);	
-					}
-					else 
-					{
-						fprintf(stderr, "pid  is %d, %dst connection, clt_socket_send err %d\n", mypid, i+1 , res);
-					}
-
+					err_ret("writen err");
 					clt_socket_closeconn(&connfd);
 					continue;
 				}
-
-				res = clt_socket_rev(sockhandler, connfd, rec_buf, &rvlen);
-				if (res != 0)
+				res = read(connfd, rec_buf, MAX_BUF_SIZE);
+				if (res < 0)
 				{
-					if (res == SOCKET_TIMEOUT_ERR)
-					{
-						fprintf(stdout, "pid  is %d, %dst connection, read time out\n", mypid, i+1);
-					}
-					else if (res == SOCKET_UNCOON_ERR)
-					{
-						fprintf(stdout, "pid  is %d, %dst connection, server is closed\n", mypid, i+1);
-						//clt_socket_closeconn(&connfd);
-						
-					}
-					else 
-					{
-						fprintf(stderr, "pid  is %d, %dst connection, clt_socket_rev err: %d\n", mypid, i+1, res);
-					
-					}
+					err_ret("read err");
 					clt_socket_closeconn(&connfd);
 					continue;
 				}
-				else if (res == 0)
-				{
-					rec_buf[rvlen] = '\0';
-					fprintf(stdout, "buf from server is : %s\n", rec_buf);
-					fprintf(stdout, "\n");
-					
-					clt_socket_closeconn(&connfd);
-					
-				}
-
+	
+				rec_buf[res] = '\0';
+				fprintf(stdout, "buf from server is : %s\n", rec_buf);
+				fprintf(stdout, "\n");
+				
+				clt_socket_closeconn(&connfd);		
 			}
 
 			exit(0);

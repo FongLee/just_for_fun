@@ -7,7 +7,7 @@
 
 #include "commsocket.h"
 
-#define SERVERIP  	"192.168.1.103"
+#define SERVERIP  	"192.168.1.102"
 //#define SERVERIP  	"192.168.1.113"
 #define PORT 		1234
 

@@ -188,7 +188,7 @@ static int accept_timeout(int fd, struct sockaddr *addr,  int seconds)
  * @param  count length of buffer 
  * @return       success: equal to count; err: less than count
  */
-static ssize_t writen(int fd, void *buf, size_t count)
+ssize_t writen(int fd, void *buf, size_t count)
 {
 	if (buf == NULL || count < 0 )
 		return -1;
@@ -222,7 +222,7 @@ static ssize_t writen(int fd, void *buf, size_t count)
  * @param  count count of buffer
  * @return       read length : 0-count
  */
-static ssize_t readn(int fd, void * buf, size_t count)
+ssize_t readn(int fd, void * buf, size_t count)
 {
 	char *newchar = (char *)buf;
 	size_t left;
@@ -608,7 +608,7 @@ int clt_socket_rev(void *sockhandle, int connfd, char *buf, int *buflen)
 		{
 			fprintf(stderr, "readn err: %s\n", strerror(errno));	
 			res = SOCKET_BASE_ERR;
-			 return res;	
+			return res;	
 		}
 		//tcp is closed 
 		else if (res < rdlen)
@@ -772,39 +772,15 @@ int srv_socket_send(int connfd, char *buf, int buflen, int sendtime)
 	memcpy(newdata, &nlen, 4);
 	memcpy(newdata + 4, buf, buflen);
 
-	res = write_timeout(connfd, sendtime);
-	if (res < 0)
+	int wrlen;
+	wrlen = writen(connfd, newdata, buflen + 4);
+	if (wrlen < (buflen + 4))
 	{
-		if (errno == ETIMEDOUT)
-		{
-			//fprintf(stdout, "write time out\n");
-			free(newdata);
-			res = SOCKET_TIMEOUT_ERR;
-			return res;
-		}
-		else 
-		{
-			//fprintf(stdout, "select error\n");
-			fprintf(stdout, "write_timeout err: %s\n", strerror(errno));
-			free(newdata);
-			res = SOCKET_BASE_ERR;
-			return res;
-		}
-
+		free(newdata);
+		res = SOCKET_UNCOON_ERR;
+		return res;
 	}
-	//can write now
-	else if (res == 0)
-	{
-		int wrlen;
-		wrlen = writen(connfd, newdata, buflen + 4);
-		if (wrlen < (buflen + 4))
-		{
-			free(newdata);
-			res = SOCKET_UNCOON_ERR;
-			return res;
-		}
 
-	}
 
 	free(newdata);
 	res = SOCKET_OK;
@@ -824,89 +800,48 @@ int srv_socket_rev(int connfd, char *buf, int *buflen, int revtime)
  	int res;
 	
 	int rdlen = 0;
+
+	res = readn(connfd, &rdlen, 4);
+	if (res < 0)
+	{
+		fprintf(stderr, "readn err: %s\n", strerror(errno));
+		res = SOCKET_BASE_ERR;
+		return res;
+
+	}
+	else if (res < 4)
+	{
+		//tcp is closed
+		*buflen = 0;
+		res = SOCKET_UNCOON_ERR;
+		return res;
+	}
 	
-	res = read_timeout(connfd, revtime);
-	if (res < 0)
-	{
-		//if get the errno equals to ETIMEDOUT
-		if (errno == ETIMEDOUT)
-		{
-			//fprintf(stdout, "read time out\n");
-			res = SOCKET_TIMEOUT_ERR;
-			return res;
-		}
-		else 
-		{
-			fprintf(stdout, "read_timeout err: %s\n", strerror(errno));
-		}
-		//continue;
-		
-	}
-	else if (res == 0)
-	{
-		res = readn(connfd, &rdlen, 4);
-		if (res < 0)
-		{
-			fprintf(stderr, "readn err: %s\n", strerror(errno));
-			res = SOCKET_BASE_ERR;
-			return res;
-
-		}
-		else if (res < 4)
-		{
-			//tcp is closed
-			*buflen = 0;
-			res = SOCKET_UNCOON_ERR;
-			return res;
-		}
-		
-		rdlen = ntohl(rdlen);
-	}
-
-	res = read_timeout(connfd, revtime);
-	if (res < 0)
-	{
-		//if get the errno equals to ETIMEDOUT
-		if (errno == ETIMEDOUT)
-		{
-			//fprintf(stdout, "read time out\n");
-			res = SOCKET_TIMEOUT_ERR;
-			return res;
-		}
-		else 
-		{
-			fprintf(stdout, "read_timeout err: %s\n", strerror(errno));
-		}
-		//continue;
-		
-	}
+	rdlen = ntohl(rdlen);
 	//can read now
-	else if (res == 0)
-	{
-		res = readn(connfd, buf, rdlen);
-		//res = read(new_fd, rec_buf, sizeof(rec_buf));
-		if (res < 0)
-		{
-			fprintf(stderr, "readn err: %s\n", strerror(errno));	
-			res = SOCKET_BASE_ERR;
-			return res;	
-		}
-		//tcp is closed 
-		else if (res < rdlen)
-		{
-			//fprintf(stdout, "client is closed\n");
-			*buflen = rdlen;
-			res = SOCKET_UNCOON_ERR;
-			return res;
-		}
-		//read success 
-		else if (res == rdlen)
-		{
-			//res = SOCKET_OK;
-			*buflen = rdlen;
-			//return res;
-		}
 
+	res = readn(connfd, buf, rdlen);
+	//res = read(new_fd, rec_buf, sizeof(rec_buf));
+	if (res < 0)
+	{
+		fprintf(stderr, "readn err: %s\n", strerror(errno));	
+		res = SOCKET_BASE_ERR;
+		return res;	
+	}
+	//tcp is closed 
+	else if (res < rdlen)
+	{
+		//fprintf(stdout, "client is closed\n");
+		*buflen = rdlen;
+		res = SOCKET_UNCOON_ERR;
+		return res;
+	}
+	//read success 
+	else if (res == rdlen)
+	{
+		//res = SOCKET_OK;
+		*buflen = rdlen;
+		//return res;
 	}
 
 	res = SOCKET_OK;
