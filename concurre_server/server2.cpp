@@ -111,7 +111,8 @@ int main(int argc, char **argv)
 	{
 		while(1)
 		{
-			res = srv_socket_accept(socket_fd, &myfd, 5);
+			//my_accept2(myepoll_event_t * pev)
+			res = srv_socket_accept(socket_fd, &myfd, 0);
 			if (res != 0)
 			{
 				if (res == SOCKET_TIMEOUT_ERR)
@@ -173,6 +174,61 @@ int main(int argc, char **argv)
 
 	return 0;
 }
+
+/**
+ * accept select
+ * @param socket_fd file descriptor of listening socket
+ * @param newfd     file descriptor of connection socket
+ */
+void my_accept(int socket_fd, int *newfd)
+{
+	int res;
+	int childpid = getpid();			
+	while(1)
+	{
+		res = srv_socket_accept(socket_fd, newfd, 5);
+		if (res != 0)
+		{
+			if (res == SOCKET_TIMEOUT_ERR)
+			{
+				fprintf(stderr, "pid is %d, server socket accept time out: %d\n", childpid, res);
+				
+			}
+			else 
+			{
+				fprintf(stderr, "pid is %d, srv_socket_accept err: %d\n", childpid, res);
+			}
+			continue;
+			//exit(0);
+		}
+		break;
+		
+	}
+}
+
+/**
+ * accept 
+ * @param socket_fd file descriptor of listening socket
+ * @param newfd     file descriptor of connection socket
+ */
+void my_accept2(int socket_fd, int *newfd)
+{
+	int res;
+	int childpid = getpid();			
+	while(1)
+	{
+		res = accept(socket_fd, NULL, NULL);
+		if (res < 0)
+		{
+			err_ret("pid is %d, accept err", childpid);
+			continue;
+		}
+		*newfd = res;
+		break;
+		
+	}
+}
+
 
 /**
  * usage of the programe

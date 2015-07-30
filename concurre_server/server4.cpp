@@ -168,7 +168,7 @@ void progress_handle()
 
 		if (my_lock_try_wait() == 0)
 		{
-			fprintf(stdout, "I got mutex , pid is %d\n", getpid());
+			//fprintf(stdout, "I got mutex , pid is %d\n", getpid());
 			add_listen();
 			flag_mutex = true;
 		}
@@ -177,7 +177,7 @@ void progress_handle()
 			del_listen();
 		}
 		//fourth argument is milliseconds
-		eventnum = epoll_wait(g_epollfd, &myevent[0], MAXEVENTS, -1);
+		eventnum = epoll_wait(g_epollfd, &myevent[0], MAXEVENTS, 1000);
 		if (eventnum < 0)
 			err_sys("epoll_wait err");
 

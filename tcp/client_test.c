@@ -68,7 +68,7 @@ int main(int argc, char **argv)
 	{
 		fprintf(stderr, "clt_socket_init, %d\n", res);
 	}
-	fprintf(stderr, "begin to connect\n");
+	fprintf(stdout, "begin to connect\n");
 
 	int connfd;
 	char send_buf[MAX_BUF_SIZE] = {0};

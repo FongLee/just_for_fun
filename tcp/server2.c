@@ -25,6 +25,7 @@
 
 void my_getopt(int argc, char **argv);
 void my_accept(int socket_fd, int  *newfd);
+void my_accept2(int socket_fd, int  *newfd);
 void child_process(int newfd);
 void pr_cpu_time(void);
 int register_sig_handler();
@@ -38,7 +39,7 @@ int my_lock_init();
 void my_lock_wait();
 void my_lock_release();
 
-int childnum = 1;
+int childnum = 15;
 int *arraypid;
 long *ptr;
 static pthread_mutex_t *mptr;
@@ -83,7 +84,7 @@ int main(int argc, char **argv)
 			while(1)
 			{				
 				//my_lock_wait();
-				my_accept(socket_fd, &newfd);
+				my_accept2(socket_fd, &newfd);
 				//my_lock_release();
 				ptr[i]++;
 				fprintf(stdout, "\n");
@@ -136,7 +137,7 @@ void my_getopt(int argc, char **argv)
 }
 
 /**
- * accept 
+ * accept select
  * @param socket_fd file descriptor of listening socket
  * @param newfd     file descriptor of connection socket
  */
@@ -162,6 +163,30 @@ void my_accept(int socket_fd, int *newfd)
 			//exit(0);
 		}
 		break;
+		
+	}
+}
+
+/**
+ * accept 
+ * @param socket_fd file descriptor of listening socket
+ * @param newfd     file descriptor of connection socket
+ */
+void my_accept2(int socket_fd, int *newfd)
+{
+	int res;
+	int childpid = getpid();			
+	while(1)
+	{
+		res = accept(socket_fd, NULL, NULL);
+		if (res < 0)
+		{
+			err_ret("pid is %d, accept err", childpid);
+			continue;
+		}
+		*newfd = res;
+		break;
+		
 	}
 }
 

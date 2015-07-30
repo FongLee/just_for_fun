@@ -63,27 +63,13 @@ int main(int argc, char **argv)
 	while(1)
 	{
 		int newfd;
-		res = srv_socket_accept(socket_fd, &newfd, 5);
-		if (res != 0)
-		{
-			if (res == SOCKET_TIMEOUT_ERR)
-			{
-				fprintf(stderr, "server socket accept time out: %d\n", res);
-			}
-			else 
-			{
-				fprintf(stderr, "srv_socket_accept err: %d\n", res);
-			}
-			continue;
-		}
+		my_accept2(socket_fd, &newfd);
 		fprintf(stdout, "\n");
 		fprintf(stdout, "accept success.\n");
 		//bugs .newfd 
 		res = pthread_create(&tid, NULL, doit, (void *)newfd);
 
 	}
-
-
 
 	return 0;
 }
@@ -108,6 +94,62 @@ void my_getopt(int argc, char **argv)
 				break;
 		}
 	} 
+}
+
+/**
+ * accept select
+ * @param socket_fd file descriptor of listening socket
+ * @param newfd     file descriptor of connection socket
+ */
+void my_accept(int socket_fd, int *newfd)
+{
+	int res;
+	int childpid = getpid();			
+	while(1)
+	{
+		res = srv_socket_accept(socket_fd, newfd, 5);
+		if (res != 0)
+		{
+			if (res == SOCKET_TIMEOUT_ERR)
+			{
+				fprintf(stderr, "pid is %d, server socket accept time out: %d\n", childpid, res);
+				
+			}
+			else 
+			{
+				fprintf(stderr, "pid is %d, srv_socket_accept err: %d\n", childpid, res);
+			}
+			continue;
+			//exit(0);
+		}
+		break;
+		
+	}
+}
+
+
+
+/**
+ * accept 
+ * @param socket_fd file descriptor of listening socket
+ * @param newfd     file descriptor of connection socket
+ */
+void my_accept2(int socket_fd, int *newfd)
+{
+	int res;
+	int childpid = getpid();			
+	while(1)
+	{
+		res = accept(socket_fd, NULL, NULL);
+		if (res < 0)
+		{
+			err_ret("pid is %d, accept err", childpid);
+			continue;
+		}
+		*newfd = res;
+		break;
+		
+	}
 }
 
 void * doit(void *arg)

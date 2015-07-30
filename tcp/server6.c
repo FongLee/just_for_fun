@@ -31,7 +31,8 @@ void my_handler(int num);
 void sig_int_handler(int num);
 void usage(char *argv);
 void * thread_main(void *arg);
-
+void my_accept(int socket_fd, int *newfd);
+void my_accept2(int socket_fd, int *newfd);
 
 
 typedef struct
@@ -40,7 +41,7 @@ typedef struct
 	long thread_count;
 } thread_t;
 
-int childnum = 1;
+int childnum = 15;
 thread_t *ptr;
 int socket_fd;
 
@@ -118,40 +119,79 @@ void * thread_main(void *arg)
 	int tidnum = (int)arg; 
 	int newfd;
 	pthread_t tid = pthread_self();
-	int res;
 
 	while(1)
 	{
-		pthread_mutex_lock(&lock);
-		while(1)
-		{
-			res = srv_socket_accept(socket_fd, &newfd, 5);
-			if (res != 0)
-			{
-				if (res == SOCKET_TIMEOUT_ERR)
-				{
-					fprintf(stderr, "id is %u, server socket accept time out: %d\n", tid, res);
-				}
-				else 
-				{
-					fprintf(stderr, "id is %u, srv_socket_accept err: %d\n", tid, res);
-				}
-				continue;
-			}
-			else 
-			 	break;		
-		}
-
-		pthread_mutex_unlock(&lock);
+		//pthread_mutex_lock(&lock);
+		my_accept2(socket_fd, &newfd);
+		//pthread_mutex_unlock(&lock);
 		ptr[tidnum].thread_count++;
 		fprintf(stdout, "\n");
-		fprintf(stdout, "id is %u accept success.\n", tid);
+		fprintf(stdout, "id is %u accept success.\n", (unsigned int)tid);
 		child_process(newfd);
 		srv_socket_close(&newfd);	
 	}
 
 	return NULL;
 
+}
+
+
+/**
+ * accept select
+ * @param socket_fd file descriptor of listening socket
+ * @param newfd     file descriptor of connection socket
+ */
+void my_accept(int socket_fd, int *newfd)
+{
+	int res;
+	int childpid = getpid();			
+	while(1)
+	{
+		res = srv_socket_accept(socket_fd, newfd, 5);
+		if (res != 0)
+		{
+			if (res == SOCKET_TIMEOUT_ERR)
+			{
+				fprintf(stderr, "pid is %d, server socket accept time out: %d\n", childpid, res);
+				
+			}
+			else 
+			{
+				fprintf(stderr, "pid is %d, srv_socket_accept err: %d\n", childpid, res);
+			}
+			continue;
+			//exit(0);
+		}
+		break;
+		
+	}
+}
+
+
+
+
+/**
+ * accept 
+ * @param socket_fd file descriptor of listening socket
+ * @param newfd     file descriptor of connection socket
+ */
+void my_accept2(int socket_fd, int *newfd)
+{
+	int res;
+	int childpid = getpid();			
+	while(1)
+	{
+		res = accept(socket_fd, NULL, NULL);
+		if (res < 0)
+		{
+			err_ret("pid is %d, accept err", childpid);
+			continue;
+		}
+		*newfd = res;
+		break;
+		
+	}
 }
 
 /**

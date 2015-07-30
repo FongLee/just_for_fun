@@ -37,4 +37,4 @@ server6: $(OBJS) commsocket.o server6.o
 	$(CC) $(INCS) $(CFLAGS)   $< -o $@
 
 clean:
-	rm -f $(OBJS) *.o  $(BIN)
+	rm -f $(OBJS) *.o  $(BIN) *.txt

@@ -15,6 +15,7 @@
 #include <sys/resource.h>
 
 #include "commsocket.h"
+#include "error.h"
 
 #define PORT 		1234
 
@@ -43,21 +44,7 @@ int main(void)
 	while(1)
 	{
 		int newfd;
-		res = srv_socket_accept(socket_fd, &newfd, 5);
-		if (res != 0)
-		{
-			if (res == SOCKET_TIMEOUT_ERR)
-			{
-				fprintf(stderr, "server socket accept time out: %d\n", res);
-				
-			}
-			else 
-			{
-				fprintf(stderr, "srv_socket_accept err: %d\n", res);
-			}
-			continue;
-			//exit(0);
-		}
+		my_accept2(socket_fd, &newfd);
 		fprintf(stdout, "\n");
 		fprintf(stdout, "accept success.\n");
 
@@ -89,6 +76,63 @@ int main(void)
 	srv_socket_destory(&socket_fd);
 	return 0;
 }
+
+
+/**
+ * accept select
+ * @param socket_fd file descriptor of listening socket
+ * @param newfd     file descriptor of connection socket
+ */
+void my_accept(int socket_fd, int *newfd)
+{
+	int res;
+	int childpid = getpid();			
+	while(1)
+	{
+		res = srv_socket_accept(socket_fd, newfd, 5);
+		if (res != 0)
+		{
+			if (res == SOCKET_TIMEOUT_ERR)
+			{
+				fprintf(stderr, "pid is %d, server socket accept time out: %d\n", childpid, res);
+				
+			}
+			else 
+			{
+				fprintf(stderr, "pid is %d, srv_socket_accept err: %d\n", childpid, res);
+			}
+			continue;
+			//exit(0);
+		}
+		break;
+		
+	}
+}
+
+
+/**
+ * accept 
+ * @param socket_fd file descriptor of listening socket
+ * @param newfd     file descriptor of connection socket
+ */
+void my_accept2(int socket_fd, int *newfd)
+{
+	int res;
+	int childpid = getpid();			
+	while(1)
+	{
+		res = accept(socket_fd, NULL, NULL);
+		if (res < 0)
+		{
+			err_ret("pid is %d, accept err", childpid);
+			continue;
+		}
+		*newfd = res;
+		break;
+		
+	}
+}
+
 
 /**
  * child process functon
