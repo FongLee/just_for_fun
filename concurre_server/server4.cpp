@@ -16,6 +16,7 @@
 #include <sys/shm.h>
 #include <sys/wait.h>
 #include <pthread.h>
+#include <errno.h>
 
 #include "error.h"
 
@@ -45,7 +46,7 @@ typedef struct progress_pool
 	pthread_mutex_t *mptr;
 } progress_pool_t;
 
-int set_event(int epfd, int fd, myepoll_event_t *pev);
+int set_event(int epfd, int fd, callback_t mycallback, myepoll_event_t *pev);
 int add_event(int epfd, uint32_t event,  myepoll_event_t * pev);
 int mod_event(int epfd, uint32_t event, callback_t mycallback, myepoll_event_t * pev);
 int del_event(int epfd, myepoll_event_t * pev);
@@ -104,7 +105,7 @@ int main(int argc, char const *argv[])
 
 	if (my_lock_init() < 0)
 		err_sys("my_lock_init err");
-
+	
 	myprogress_pool.current_progress = PROGRESSNUM;
 
 	int pid = 0;
@@ -143,23 +144,25 @@ void progress_handle()
 	long duration = 0;
 	bool flag_mutex = false;
 	epoll_init();
-	//add_event(g_epollfd, EPOLLIN, &g_events[0]);
 	while(1)
 	{	
-
 		now = time(NULL);
 		for (int i = 1; i < 100; i++, checkpos++)
 		{
 			if (checkpos == MAXEVENTS) 
-				checkpos =0;
-			if (g_events[i].status == 0)
+				checkpos =1;
+			if (g_events[checkpos].status == 0)
 				continue;
-			duration = now - g_events[i].last_alive;
+			duration = now - g_events[checkpos].last_alive;
 
 			if (duration >60)
 			{
-				close(g_events[i].fd);
-				fprintf(stdout, "fd of connection : %d hasn't being active for a long time\n", g_events[i].fd);
+				pev = &g_events[checkpos];
+				if (del_event(g_epollfd, pev) < 0)
+					err_ret("del_event err");
+
+				close(g_events[checkpos].fd);
+				fprintf(stdout, "fd of connection : %d hasn't being active for a long time\n", g_events[checkpos].fd);
 			}
 		}
 
@@ -174,7 +177,7 @@ void progress_handle()
 			del_listen();
 		}
 		//fourth argument is milliseconds
-		eventnum = epoll_wait(g_epollfd, &myevent[0], MAXEVENTS, 1000);
+		eventnum = epoll_wait(g_epollfd, &myevent[0], MAXEVENTS, -1);
 		if (eventnum < 0)
 			err_sys("epoll_wait err");
 
@@ -293,7 +296,7 @@ int srv_init()
 	if ((flags = fcntl(myprogress_pool.listenfd, F_GETFL, 0)) < 0)
 		return -1;
 
-	flags &= ~O_NONBLOCK;
+	flags |= O_NONBLOCK;
 	if (fcntl(myprogress_pool.listenfd, F_SETFL, flags) < 0)
 		return -1;
 
@@ -309,7 +312,6 @@ int srv_init()
 	if (listen(myprogress_pool.listenfd, LISTENNUM) < 0)
 		return -1;
 
-
 	return 0;
 }
 
@@ -319,23 +321,32 @@ int srv_init()
  */
 int epoll_init()
 {
+	int res = 0;
 	g_epollfd =  epoll_create(MAXEVENTS);
 	if (g_epollfd < 0)
-		return -1;
-
+	{
+		err_sys("epoll create err");
+	}
+		
 	for (int i = 0; i < MAXEVENTS; i++)
 	{
 		g_events[i].fd = -1;
-		g_events[i].status = false;
+		g_events[i].status = 0;
 		memset(g_events[i].send_buffer, 0, sizeof(g_events[i].send_buffer));
 		memset(g_events[i].recv_buffer, 0, sizeof(g_events[i].send_buffer));
 		g_events[i].callback = NULL;
 		g_events[i].last_alive = 0;
 	}
 
-	set_event(g_epollfd, myprogress_pool.listenfd, myaccept, &g_events[0]);
-	add_event(g_epollfd, EPOLLIN, &g_events[0]);
-	return 0;
+	res = set_event(g_epollfd, myprogress_pool.listenfd, myaccept, &g_events[0]);
+	if (res < 0)
+		err_ret("set_event");
+
+	res = add_event(g_epollfd, EPOLLIN, &g_events[0]);
+	if (res < 0)
+		err_ret("add_event");
+
+	return res;
 }
 
 /**
@@ -391,19 +402,29 @@ int myaccept(myepoll_event_t * pev)
 	int newfd;
 	newfd = accept(pev->fd, NULL, NULL);
 	if (newfd < 0)
+	{
+		err_ret("pid is %d, accept err", getpid());
 		return -1;
+	}
 
+		
 	//set new fd nonblocking
 	int flags;
 	if ((flags = fcntl(newfd, F_GETFL, 0)) < 0)
 		return -1;
-	flags &= ~O_NONBLOCK;
+	flags |= O_NONBLOCK;
 	if (fcntl(newfd, F_SETFL, flags) < 0)
 		return -1;
+
+	int res;
+	res = set_event(g_epollfd, newfd, recv_data, &g_events[i_idle]);
+	if (res < 0)
+		err_ret("set_event");
+	res = add_event(g_epollfd, EPOLLIN, &g_events[i_idle]);
+	if (res < 0)
+		err_ret("add_event");
 	
-	set_event(g_epollfd, newfd, recv_data, &g_events[i_idle]);
-	add_event(g_epollfd, EPOLLIN, &g_events[i_idle]);
-	return 0;
+	return res;
 }
 
 /**
@@ -414,31 +435,48 @@ int myaccept(myepoll_event_t * pev)
 int recv_data(myepoll_event_t * pev)
 {
 	int len = 0;
+	int res = 0;
 	len = read(pev->fd, pev->recv_buffer, BUFFERMAX);
 	if (len < 0)
 	{
-		err_ret("read err");
+
+		if (errno == EAGAIN)
+		{
+			err_ret("pid is %d, fd is %d, read err, EAGAIN", getpid(), pev->fd);
+			return -1;
+		}
+
+		err_ret("pid is %d, fd is %d , read err", getpid(), pev->fd);	
+		connsum[myprogress_pool.index]++;
+		del_event(g_epollfd, pev);
+		close(pev->fd);
 		return -1;
 	}
 	if (len == 0)
-	{
-		close(pev->fd);
+	{	
+
 		connsum[myprogress_pool.index]++;
-		del_event(g_epollfd, pev);
+		if (del_event(g_epollfd, pev) < 0)
+			err_ret("del_event is err");
+
+		close(pev->fd);
+
 	}
 	else 
 	{
 		pev->recv_buffer[len] = '\0';
-		fprintf(stdout, " recv buffer from client is %s\n", pev->recv_buffer);
+		fprintf(stdout, "recv buffer from client is %s\n", pev->recv_buffer);
 		
 		//very simple business process
 		strcpy(pev->send_buffer, pev->recv_buffer);
 		memset(pev->recv_buffer, 0, sizeof(pev->recv_buffer));
 
-		mod_event(g_epollfd, EPOLLOUT, send_data, pev);
+		res = mod_event(g_epollfd, EPOLLOUT, send_data, pev);
+		if (res < 0)
+			err_ret("mod_event err");
 	}
 
-	return 0;
+	return res;
 }
 
 /**

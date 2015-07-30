@@ -69,7 +69,7 @@ int main(int argc, char **argv)
 	{
 		fprintf(stderr, "clt_socket_init, %d\n", res);
 	}
-	fprintf(stderr, "begin to connect\n");
+	fprintf(stdout, "begin to connect\n");
 
 	int connfd;
 	char send_buf[MAX_BUF_SIZE] = {0};
@@ -114,7 +114,7 @@ int main(int argc, char **argv)
 				res = read(connfd, rec_buf, MAX_BUF_SIZE);
 				if (res < 0)
 				{
-					err_ret("read err");
+					err_ret("pid is %d, read err", getpid());
 					clt_socket_closeconn(&connfd);
 					continue;
 				}
