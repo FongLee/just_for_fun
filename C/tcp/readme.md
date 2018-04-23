@@ -95,10 +95,10 @@ Usage:
 <div align = "center">server7 structure</div>
 
 
-###client
+### client
 It is a  P2P client with select, Which can receive data from server and send data from stdin to server. 
 
-###p2pclient
+### p2pclient
 
 It is a  P2P client with a parent progress and a child progress.
 
@@ -106,7 +106,7 @@ It is a  P2P client with a parent progress and a child progress.
 <div align = "center">p2pclient structure</div>
 
 
-###p2pserver
+### p2pserver
 Parent process get data from client, child process send data from stdin to client.When parent process detects that client is closed, it 
 closes itself and send siganl to child process to let child process close.
 
