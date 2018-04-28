@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>rootScope共享</title>
+    <script type="text/javascript" src="js/angular-1.3.0.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-3.0.0/css/bootstrap.css">
+    <script type="text/javascript">
+    var myApp = angular.module('myApp1', []);
+    myApp.controller('controller1', function($rootScope, $scope) {
+        $scope.person1 = {};
+        $rootScope.person = $scope.person1;
+        $scope.sendDate = function() {
+            debugger;
+            $rootScope.person = $scope.person1;
+        };
+    });
+    myApp.controller('controller2', function($rootScope, $scope) {
+        $scope.person2 = $rootScope.person;
+        $scope.getDate = function() {
+            debugger;
+            $scope.person2 = $rootScope.person;
+        }
+    });
+    </script>
+</head>
+
+<body>
+    <div ng-app="myApp1" class="panel panel-primary">
+        <div class="panel-heading">
+            <div class="panel-title">rootScope共享</div>
+        </div>
+        <div class="panel-body col-md-12">
+            <div class="row">
+                <div class="form-horizontal" ng-controller="controller1">
+                    <div class="form-group" ng-controller="controller1">
+                        <div class="col-md-2">
+                            <div class="control-label">person1 is:</div>
+                        </div>
+                        <div class="col-md-3">
+                            <input class="form-control" type="text" ng-model="person1.name">
+                        </div>
+                    </div>
+                    <div class="form-group" ng-controller="controller2">
+                        <div class="col-md-2">
+                            <div class="control-label">person2 is:</div>
+                        </div>
+                        <div class="col-md-3">
+                            <input class="form-control" type="text" ng-model="person2.name">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

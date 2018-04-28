@@ -1,0 +1,45 @@
+<!doctype html>
+<html ng-app="UserInfoModule">
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/bootstrap-3.0.0/css/bootstrap.css">
+    <script src="js/angular-1.3.0.js"></script>
+    <title>
+        This is a from test.
+    </title>
+</head>
+
+<body>
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <div class="panel-title">双向数据绑定</div>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <form class="form-horizontal" role="form" ng-controller="UserInfoCtrl">
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">
+                                邮箱：
+                            </label>
+                            <div class="col-md-10">
+                                <input type="email" class="form-control" placeholder="推荐使用QQ邮箱" ng-model="userInfo.email">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">
+                                密码：
+                            </label>
+                            <div class="col-md-10">
+                                <input type="password" class="form-control" placeholder="只能是数字、字母、下划线" ng-model="userInfo.password">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

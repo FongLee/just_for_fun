@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>service共享数据</title>
+    <script type="text/javascript" src="js/angular-1.3.0.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-3.0.0/css/bootstrap.css">
+</head>
+
+<body ng-app="myApp">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <div class="panel-title">service共享数据</div>
+        </div>
+        <div class="panel-body">
+            <div class="col-md-12">
+                <div class="form-horizontal">
+                    <div ng-controller="controller1" >
+                    	<div class="form-group">
+                    	    <div class="control-label col-md-2">
+                    	        person1 is:
+                    	    </div>
+                    	    <div class="col-md-3">
+                    	        <input class="form-control" type="text" ng-model="person1.name">
+                    	    </div>
+                    	</div>
+                    </div>
+                    <div  ng-controller="controller2">
+                        <div class="form-group">
+                            <div class=" col-md-2 control-label">
+                                person2 is:
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" ng-model="person2.name">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+    var myApp = angular.module('myApp', []);
+    myApp.controller('controller2', function($scope, shareService) {
+        debugger;
+        $scope.person2 = shareService.person;
+
+    });
+    myApp.controller('controller1', function($scope, shareService) {
+        debugger;
+        $scope.person1 = {};
+        shareService.person = $scope.person1;
+
+
+    });
+
+
+    myApp.service('shareService', function() {
+        debugger;
+    });
+    </script>
+</body>
+
+</html>

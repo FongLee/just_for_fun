@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>scope共享数据</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-3.0.0/css/bootstrap.css">
+    <script type="text/javascript" src="js/angular-1.3.0.js"></script>
+</head>
+
+<body>
+    <div class="panel panel-primary" ng-app="myApp">
+        <div class="panel-heading">
+            <div class="panel-tile">
+                scope共享数据
+            </div>
+        </div>
+        <div class="panel-body col-md-12">
+            <div class="form-horizontal">
+                <div class="form-group" ng-controller="controller1">
+                    <div class="col-md-2 control-label">person1 is:</div>
+                    <div class="col-md-3">
+                        <input class="form-control" type="text" ng-model="person1.name">
+                    </div>
+                    <div>
+                        <button class="btn btn-default" ng-click="sendData()">send data</button>
+                    </div>
+                </div>
+                <div class="form-group" ng-controller="controller2">
+                    <div class="col-md-2 control-label">person2 is</div>
+                    <div class="col-md-3">
+                        <input class="form-control" type="text" ng-model="person2.name">
+                    </div>
+                    <div>
+                        <button class="btn btn-default" ng-click="get()">get data</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+    var myApp = angular.module('myApp', []);
+    myApp.controller('controller1', function($rootScope, $scope) {
+        $scope.sendData = function() {
+            debugger;
+            $rootScope.$broadcast('eventTest', $scope.person1);
+        }
+    });
+
+    myApp.controller('controller2', function($rootScope, $scope) {
+
+        $scope.$on('eventTest', function(event, args) {
+            debugger;
+            $scope.person2 = args;
+        });
+
+
+    });
+    </script>
+</body>
+
+</html>
