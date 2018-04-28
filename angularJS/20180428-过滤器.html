@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>过滤器</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-3.0.0/css/bootstrap.css">
+    <script type="text/javascript" src="js/angular-1.3.0.js"></script>
+</head>
+
+<body>
+    <div ng-app="myApp" ng-controller="controller1" class="panel panel-primary">
+        <div class="panel-heading">
+            <div class="panel-title">过滤器</div>
+        </div>
+        <div class="panel-body">
+            <div class="row col-md-12">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <div class="col-md-2 control-label">
+                            input:
+                        </div>
+                        <div class="col-md-3">
+                            <input class="from-control" type="text" ng-model="person.name">
+                        </div>
+                        <div class="col-md-3" control-label ng-bind="person.name | myFilter">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+    var myApp = angular.module('myApp', []);
+    myApp.controller('controller1', function($scope) {
+
+    });
+
+    myApp.filter('myFilter', function() {
+
+        return function(input) {
+            if (input) {
+                return input.toUpperCase();
+            }
+        }
+    });
+    </script>
+</body>
+
+</html>
