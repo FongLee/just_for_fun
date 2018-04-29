@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>数据绑定实现</title>
+</head>
+
+<body>
+    <script type="text/javascript">
+    function Scope() {
+        this.$$watchers = [];
+    }
+
+    Scope.prototype.$watch = function(watchfn, listenfn) {
+        var watch = {
+            watchfn: watchfn,
+            listenfn: listenfn
+        }
+        this.$$watchers.push(watch);
+    };
+
+
+    Scope.prototype.$digest = function() {
+    	debugger;
+    	var self = this;
+        for (var i = 0; i < this.$$watchers.length; i++) {
+        	var newVal = this.$$watchers[i].watchfn(self);
+        	var oldVal = this.$$watchers[i].last;
+        	if(oldVal !== newVal) {
+        		this.$$watchers[i].listenfn(newVal, oldVal, self);
+        	}
+        	this.$$watchers[i].last = newVal;
+            
+        }
+    }
+
+    onload = function() {
+        var scope = new Scope;
+        scope.name = 'lifeng';
+        scope.count = 0;
+
+        scope.$watch(function(scope) { return scope.name; }, function(newVal, oldVal, scope) {
+            scope.count++;
+            console.log('count is ' + scope.count);
+        })
+
+        scope.$digest();
+        scope.$digest();
+
+        scope.name='hello world';
+        scope.$digest();
+    }
+    </script>
+</body>
+
+</html>
