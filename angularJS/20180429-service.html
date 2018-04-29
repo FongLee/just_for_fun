@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>service</title>
+    <script type="text/javascript" src="js/angular-1.3.0.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-3.0.0/css/bootstrap.css">
+</head>
+
+<body>
+    <div ng-app="myApp" ng-controller="controller1" class="panel panel-primary">
+        <div class="panel-heading">
+            <div class="panel-title">service使用</div>
+        </div>
+        <div class="panel-body">
+            <div class="row col-md-12">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <div class="control-label col-md-2">
+                            Time is:
+                        </div>
+                        <div class="col-md-5">
+                            <input class="form-control" type="text" ng-model="currTime" ng-disabled="isdisabled">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="control-label col-md-2">
+                            Location is:
+                        </div>
+                        <div class="col-md-5">
+                            <input class="form-control" type="text" ng-model="currLocation">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-2 control-label"></div>
+                        <div class="col-md-3">
+                            <button class="form-control" ng-click="clickMe()">Get</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                    	<div class="conrol-label col-md-2">
+                    		service name is:
+                    	</div>
+                    	<div class="col-md-5">
+                    		<input class="form-control" type="form-control" ng-model="testService">
+                    	</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+	var myApp = angular.module('myApp', []);
+	myApp.controller('controller1', function($scope, $interval, $location, $http, myService) {
+	    debugger;
+	    $scope.currLocation = $location.absUrl();
+	    $scope.isdisabled = true;
+	    $interval(function() {
+
+	        $scope.currTime = new Date();
+
+	    }, 1000);
+
+
+	    $scope.clickMe = function() {
+	        $http.get('http://www.baidu.com').then(function(response) {
+	            debugger;
+	        });
+	    }
+
+	 	$scope.testService = myService.getName();
+
+
+	});
+
+	myApp.service('myService' ,function(){
+	 	this.getName = function() {
+	 		return 'lifeng';
+	 	}
+	 });
+
+
+</script>
+
+</html>
