@@ -12,7 +12,20 @@
     function Scope() {
         this.$$watchers = [];
         this.$$asyncQueue = [];
+        this.$$phase = null;
+    }
 
+    Scope.prototype.$beginPhase = function(phase) {
+        if (this.$$phase) {
+            console.log('error');
+        }
+
+        this.$$phase = phase;
+
+    }
+
+    Scope.prototype.$clearPhase = function() {
+        this.$$phase = null;
     }
 
     Scope.prototype.$watch = function(watchfn, listenfn) {
@@ -24,14 +37,27 @@
     }
 
     Scope.prototype.$evalasync = function(expr) {
-        this.$$asyncQueue.push({
-            scope: this,
+        var that = this;
+        if (!this.$phase && !this.$$asyncQueue.length) {
+            setTimeout(
+                function() {
+                    if (that.$$asyncQueue.length) {
+                        that.$digest()
+                    }
+                }
+
+                , 0);
+        }
+
+        that.$$asyncQueue.push({
+            scope: that,
             expression: expr
         });
     }
     Scope.prototype.$digest = function() {
         var dirty = false;
         var ttl = 10;
+        this.$beginPhase('$digest');
         do {
             while (this.$$asyncQueue.length > 0) {
                 var expr = this.$$asyncQueue.shift();
@@ -43,6 +69,8 @@
                 console.log('error');
             }
         } while (dirty);
+
+        this.$clearPhase();
     }
 
     Scope.prototype.$digestOne = function() {
@@ -70,8 +98,11 @@
 
     Scope.prototype.$apply = function(expr) {
         try {
-            this.$eval(expr);
+            this.$beginPhase('$apply');
+            return this.$eval(expr);
+
         } finally {
+            this.$clearPhase();
             this.$digest();
         }
     }
@@ -81,30 +112,15 @@
         scope.name = 'lifeng';
         scope.count = 0;
 
-        scope.$watch(function(scope) {
-            return scope.count;
-        }, function(newVal, oldVal, scope) {
-            this.countTwo = this.count === 2;
-            console.log('count is ' + newVal);
+        scope.$evalasync(function(scope) {
+            console.log('name is ' + scope.name);
         });
 
-        scope.$watch(function(scope) {
-                return scope.name;
-            },
-            function(newVal, oldVal, scope) {
-                scope.count++;
-                scope.$evalasync(function() {
-                    console.log('evalasync');
-                });
-                console.log('name is ' + scope.name);
-            });
-
-        scope.$digest();
-        scope.name = 'hello';
-        scope.$digest();
-        scope.$apply(function(scope) {
-            scope.name = 'world';
+        scope.$apply(function() {
+            console.log('test apply');
         });
+
+
 
     }
     </script>
