@@ -51,6 +51,18 @@
 
     };
 
+    Scope.prototype.$eval = function(expr, locals) {
+        return expr(this, locals);
+    }
+
+    Scope.prototype.$apply = function(expr) {
+        try {
+            this.$eval(expr);
+        } finally {
+            this.$digest();
+        }
+    }
+
     window.onload = function() {
         var scope = new Scope();
         scope.name = 'lifeng';
@@ -75,6 +87,9 @@
         scope.$digest();
         scope.name = 'hello';
         scope.$digest();
+        scope.$apply(function(scope) {
+            scope.name = 'world';
+        });
 
     }
     </script>
