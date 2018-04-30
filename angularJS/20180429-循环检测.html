@@ -67,7 +67,7 @@ window.onload = function() {
 
     scope.$digest()
     scope.name = 'hello';
-
+    // 在第二个watch中修改了count的值，能够循环扫描变更。
     scope.$digest();
 
 }
