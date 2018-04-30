@@ -11,6 +11,7 @@
     <script type="text/javascript">
     function Scope() {
         this.$$watchers = [];
+        this.$$asyncQueue = [];
 
     }
 
@@ -22,10 +23,21 @@
         this.$$watchers.push(watch);
     }
 
+    Scope.prototype.$$evalasync = function(expr) {
+        this.$$asyncQueue.push({
+            scope: this,
+            expression: expr
+        });
+    }
     Scope.prototype.$digest = function() {
         var dirty = false;
         var ttl = 10;
         do {
+            while (this.$$asyncQueue.length > 0) {
+                var expr = this.$$asyncQueue.shift();
+                this.$eval(expr.expression);
+            }
+
             dirty = this.$digestOne();
             if (dirty && !(ttl--)) {
                 console.log('error');
@@ -52,6 +64,7 @@
     };
 
     Scope.prototype.$eval = function(expr, locals) {
+        debugger;
         return expr(this, locals);
     }
 
@@ -80,7 +93,9 @@
             },
             function(newVal, oldVal, scope) {
                 scope.count++;
-
+                scope.$$evalasync(function() {
+                    console.log('evalasync');
+                });
                 console.log('name is ' + scope.name);
             });
 
