@@ -29,11 +29,20 @@
     }
 
     Scope.prototype.$watch = function(watchfn, listenfn) {
+        var that = this;
         var watch = {
             watchfn: watchfn,
             listenfn: listenfn
         };
-        this.$$watchers.push(watch);
+        that.$$watchers.push(watch);
+
+        return function() {
+            var index = that.$$watchers.indexOf(watch);
+            if (index >= 0) {
+                that.$$watchers.splice(index, 1);
+            }
+
+        }
     }
 
     Scope.prototype.$evalasync = function(expr) {
@@ -121,16 +130,22 @@
         scope.name = 'lifeng';
         scope.count = 0;
 
-        scope.$evalasync(function(scope) {
+        var removeWatch = scope.$watch(function(scope) {
+            return scope.name;
+        }, function(newVal, oldVal, scope) {
+            scope.count++;
             console.log('name is ' + scope.name);
-            throw 'evalasysnc';
         });
 
-        scope.$apply(function() {
-            console.log('test apply');
-        });
+        scope.$digest();
 
 
+
+        removeWatch();
+
+        scope.name = 'hello';
+        scope.$digest();
+        console.log('scope.count is ' + scope.count);
 
     }
     </script>
