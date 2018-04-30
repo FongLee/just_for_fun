@@ -6,62 +6,62 @@
 </head>
 
 <body>
-<script type="text/javascript">
-function Scope() {
-    this.$$watchers = [];
-}
+    <script type="text/javascript">
+    function Scope() {
+        this.$$watchers = [];
+    }
 
-Scope.prototype.$watch = function(watchfn, listenfn) {
-    var watch = {
-        watchfn: watchfn,
-        listenfn: listenfn
-    };
-    this.$$watchers.push(watch);
-}
+    Scope.prototype.$watch = function(watchfn, listenfn) {
+        var watch = {
+            watchfn: watchfn,
+            listenfn: listenfn
+        };
+        this.$$watchers.push(watch);
+    }
 
-Scope.prototype.$digest = function() {
-    debugger;
-    var self = this;
-    var watchers = self.$$watchers;
-    watchers.forEach(function(value, index, watchers) {
-        var newVal = value.watchfn(self);
-        var oldVal = value.last;
-        if (newVal !== oldVal) {
-            value.listenfn(newVal, oldVal, self);
-        }
-        value.last = newVal;
-    });
-}
+    Scope.prototype.$digest = function() {
+        debugger;
+        var self = this;
+        var watchers = self.$$watchers;
+        watchers.forEach(function(value, index, watchers) {
+            var newVal = value.watchfn(self);
+            var oldVal = value.last;
+            if (newVal !== oldVal) {
+                value.listenfn(newVal, oldVal, self);
+            }
+            value.last = newVal;
+        });
+    }
 
-window.onload = function(argument) {
-    var scope = new Scope();
-    scope.name = 'lifeng';
-    scope.count = 0;
+    window.onload = function(argument) {
+        var scope = new Scope();
+        scope.name = 'lifeng';
+        scope.count = 0;
 
-    scope.$watch(
-        function(scope) {
-            return scope.count;
+        scope.$watch(
+            function(scope) {
+                return scope.count;
 
-        },
-        function(newVal, oldVal, scope) {
-            scope.countTwo = (newVal === 2);
-            console.log('countTwo is ' + scope.countTwo);
-        }
-    );
+            },
+            function(newVal, oldVal, scope) {
+                scope.countTwo = (newVal === 2);
+                console.log('countTwo is ' + scope.countTwo);
+            }
+        );
 
-    scope.$watch(function(scope) {
-        return scope.name;
-    }, function(newVal, oldVal, scope) {
-        scope.count++;
-        console.log('count is ' + scope.count);
-    });
+        scope.$watch(function(scope) {
+            return scope.name;
+        }, function(newVal, oldVal, scope) {
+            scope.count++;
+            console.log('count is ' + scope.count);
+        });
 
-    scope.$digest();
-    // 在第二个watch中修改了count的值，但是没有在第一个watch体现出来。
-    scope.name = 'hello';
-    scope.$digest();
-}
-</script>
+        scope.$digest();
+        // 在第二个watch中修改了count的值，但是没有在第一个watch体现出来。
+        scope.name = 'hello';
+        scope.$digest();
+    }
+    </script>
 </body>
 
 </html>

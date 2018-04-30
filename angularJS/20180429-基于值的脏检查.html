@@ -1,97 +1,99 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-	<title>循环检测</title>
+    <title>循环检测</title>
 </head>
+
 <body>
-	
-<script type="text/javascript">
-function Scope() {
-    this.$$watchers = [];
-}
+    <script type="text/javascript">
+    function Scope() {
+        this.$$watchers = [];
+    }
 
-Scope.prototype.$watch = function(watchfn, listenfn) {
-    var watch = {
-        watchfn: watchfn,
-        listenfn: listenfn
+    Scope.prototype.$watch = function(watchfn, listenfn) {
+        var watch = {
+            watchfn: watchfn,
+            listenfn: listenfn
+        };
+        this.$$watchers.push(watch);
+    }
+    Scope.prototype.$digest = function() {
+        var ttl = 10;
+        var dirty = false;
+        do {
+            dirty = this.$digestOne();
+
+            if (dirty && !(ttl--)) {
+                console.log('error happened');
+            }
+        }
+        while (dirty)
     };
-    this.$$watchers.push(watch);
-}
-Scope.prototype.$digest = function() {
-    var ttl = 10;
-    var dirty = false;
-    do {
-        dirty = this.$digestOne();
 
-        if (dirty && !(ttl--)) {
-            console.log('error happened');
-        }
-    }
-    while (dirty)
-};
+    Scope.prototype.$digestOne = function() {
+        debugger;
+        var self = this;
+        var dirty = false;
+        this.$$watchers.forEach(function(value, index, array) {
+            var newVal = value.watchfn(self);
+            var oldVal = value.last;
+            if (oldVal !== newVal) {
+                value.listenfn(newVal, oldVal, self);
+                dirty = true;
+            }
+            value.last = newVal;
+        });
+        return dirty;
 
-Scope.prototype.$digestOne = function() {
-    debugger;
-    var self = this;
-    var dirty = false;
-    this.$$watchers.forEach(function(value, index, array) {
-        var newVal = value.watchfn(self);
-        var oldVal = value.last;
-        if (oldVal !== newVal) {
-            value.listenfn(newVal, oldVal, self);
-            dirty = true;
-        }
-        value.last = newVal;
-    });
-    return dirty;
-
-}
-
-var isEqual = function(newVal, oldVal) {
-    if (!newVal && !oldVal) {
-        return true;
     }
 
-    if (!newVal || oldVal) {
-        return false;
-    }
-
-    if (typeof newVal === 'object' && oldVal === 'object') {
-        for (var i in newVal) {
-
+    var isEqual = function(newVal, oldVal) {
+        if (!newVal && !oldVal) {
+            return true;
         }
 
-    } else {
-        return newVal === oldVal;
+        if (!newVal || oldVal) {
+            return false;
+        }
+
+        if (typeof newVal === 'object' && oldVal === 'object') {
+            for (var i in newVal) {
+
+            }
+
+        } else {
+            return newVal === oldVal;
+        }
+
     }
 
-}
+    window.onload = function() {
+        var scope = new Scope();
+        scope.name = 'lifeng';
+        scope.count = 0;
 
-window.onload = function() {
-    var scope = new Scope();
-    scope.name = 'lifeng';
-    scope.count = 0;
+        scope.$watch(function(scope) {
+            return scope.count;
+        }, function(newVal, oldVal, scope) {
+            scope.countTwo = (newVal === 2);
+            console.log('scope.countTwo is ' + newVal);
+        });
 
-    scope.$watch(function(scope) {
-        return scope.count;
-    }, function(newVal, oldVal, scope) {
-        scope.countTwo = (newVal === 2);
-        console.log('scope.countTwo is ' + newVal);
-    });
+        scope.$watch(function(scope) {
+            return scope.name;
+        }, function(newVal, oldVal, scope) {
+            scope.count++;
+            console.log('scope.count is ' + scope.count);
+        })
 
-    scope.$watch(function(scope) {
-        return scope.name;
-    }, function(newVal, oldVal, scope) {
-        scope.count++;
-        console.log('scope.count is ' + scope.count);
-    })
+        scope.$digest()
+        scope.name = 'hello';
 
-    scope.$digest()
-    scope.name = 'hello';
+        scope.$digest();
 
-    scope.$digest();
-
-}
-</script>
+    }
+    </script>
 </body>
+
 </html>

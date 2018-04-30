@@ -2,13 +2,16 @@
 <html>
 
 <head>
-    <title>循环检测</title>
+    <title>能够检测对象变更</title>
+    <script type="text/javascript" src="20180430-拷贝.js"></script>
+    <script type="text/javascript" src="20180430-equal函数.js"></script>
 </head>
 
 <body>
     <script type="text/javascript">
     function Scope() {
         this.$$watchers = [];
+
     }
 
     Scope.prototype.$watch = function(watchfn, listenfn) {
@@ -18,35 +21,36 @@
         };
         this.$$watchers.push(watch);
     }
+
     Scope.prototype.$digest = function() {
-        var ttl = 10;
         var dirty = false;
+        var ttl = 10;
         do {
             dirty = this.$digestOne();
-
             if (dirty && !(ttl--)) {
-                console.log('error happened');
+                console.log('error');
             }
-        }
-        while (dirty)
-    };
+        } while (dirty);
+    }
 
     Scope.prototype.$digestOne = function() {
         debugger;
-        var self = this;
         var dirty = false;
-        this.$$watchers.forEach(function(value, index, array) {
-            var newVal = value.watchfn(self);
-            var oldVal = value.last;
-            if (oldVal !== newVal) {
-                value.listenfn(newVal, oldVal, self);
+        var that = this;
+        this.$$watchers.forEach(function(val, index, array) {
+            var newVal = val.watchfn(that);
+            var oldVal = val.last;
+            if (!eq(newVal, oldVal)) {
+                val.listenfn(newVal, oldVal, that);
                 dirty = true;
             }
-            value.last = newVal;
+            val.last = deepCopy(newVal);
         });
+
         return dirty;
 
-    }
+    };
+
     window.onload = function() {
         var scope = new Scope();
         scope.name = 'lifeng';
@@ -55,20 +59,21 @@
         scope.$watch(function(scope) {
             return scope.count;
         }, function(newVal, oldVal, scope) {
-            scope.countTwo = (newVal === 2);
-            console.log('scope.countTwo is ' + newVal);
+            this.countTwo = this.count === 2;
+            console.log('count is ' + newVal);
         });
 
         scope.$watch(function(scope) {
-            return scope.name;
-        }, function(newVal, oldVal, scope) {
-            scope.count++;
-            console.log('scope.count is ' + scope.count);
-        })
+                return scope.name;
+            },
+            function(newVal, oldVal, scope) {
+                scope.count++;
 
-        scope.$digest()
+                console.log('name is ' + scope.name);
+            });
+
+        scope.$digest();
         scope.name = 'hello';
-        // 在第二个watch中修改了count的值，能够循环扫描变更。
         scope.$digest();
 
     }
