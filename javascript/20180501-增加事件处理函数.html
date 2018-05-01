@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>事件处理</title>
+</head>
+<body>
+	<ul>
+		<li id="addEvent">
+			red
+		</li>
+		<li id="click" >
+			yellow
+		</li>
+	</ul>
+	<script type="text/javascript">
+		var addEvent = document.getElementById('addEvent');
+		if(addEvent.addEventListener) {
+			addEvent.addEventListener('click', function() {
+				console.log('addEvent 1');
+			});
+			addEvent.addEventListener('click', function(){
+				console.log('addEvent 2');
+			})
+			// IE 
+		} else if(addEvent.attachEvent) {
+			addEvent.attachEvent('onclick', function() {
+				console.log('addEvent 1');
+			});
+			addEvent.attachEvent('onclick', function(){
+				console.log('addEvent 2');
+			})
+		}
+		
+
+		var click = document.getElementById('click');
+		click.onclick =  function() {
+			console.log('addEvent 1');
+		}
+		click.onclick =  function() {
+			console.log('addEvent 2');
+		}
+
+	</script>
+</body>
+</html>
