@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>This is a float test</title>
+
+	<style type="text/css">
+
+		.content {
+			border: 1px solid black;
+			
+			
+		}
+
+		.content:after{
+			content: ".";
+			display: block;
+			height: 0;
+			visibility: hidden;
+			clear: both;
+
+		}
+		.content img{
+			float: left;
+		}
+		.foot {
+			border: 2px solid  red;
+			
+		}
+	</style>
+</head>
+<body>
+	<div class="content">
+		<img src="E:\Google 云端硬盘\Google 相册\http_imgload.jpg">This is a  test
+	</div>
+	<div class="foot">this is foot</div>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>三栏布局</title>
+	<style type="text/css">
+		* {
+			padding: 0;
+			margin: 0;
+		}
+		.wraper {
+			min-width:600px; max-width:1100px;
+			margin: 0 auto; 
+			
+		}
+
+		.nav {
+			float: left;
+			width: 200px;
+			background-color: gray;
+			padding: 0 0;
+
+		}
+
+		.content {
+			margin-left: 200px;
+			background-color: red;
+			/*width: 100%;*/
+			margin-right: 300px;
+		}
+		
+		.aside {
+			width: 300px; 
+			float: left;
+			padding: 0 0;
+		}
+		
+		/*.threecol {
+			width: 100%;
+			
+			float: left;
+		}*/
+
+		.thowcol {
+			width: 100%;
+			margin-right: -300px;
+			float: left;
+
+		}
+
+	</style>
+</head>
+<body>
+	<div class="wraper">
+		<div class="header">
+			<h1>这是三栏流动布局</h1>
+		</div>
+
+		<div class="threecol">
+			<div class="thowcol">
+			<div class="nav">
+				<ul>
+					<li>chapter1</li>
+					<li>chapter2</li>
+				</ul>
+			</div>
+			<div class="content">
+				<h1>This is content</h1>
+				<p>
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam eleifend libero et risus aliquam a cursus felis gravida. Etiam ultricies tristique tellus, vulputate euismod neque elementum ac. Integer at neque in magna lacinia bibendum sit amet sit amet dolor. Nam consequat ullamcorper eros, sed bibendum metus faucibus sit amet. Sed convallis accumsan dui, eu sodales odio mollis nec. Curabitur in nunc sed leo tempor luctus in a dolor. Sed sit amet facilisis sem. Donec scelerisque consectetur velit, vitae bibendum mauris rutrum quis.
+				</p>
+			</div>
+		</div>
+		
+		<div class="aside">
+			<h1>This is aside</h1>
+			<p>
+				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam eleifend libero et risus aliquam a cursus felis gravida. Etiam ultricies tristique tellus, vulputate euismod neque elementum ac. 
+			</p>
+		</div>
+		</div>
+		
+
+	</div>
+</body>
+</html>

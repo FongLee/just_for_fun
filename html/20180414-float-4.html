@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>This is a float test</title>
+
+	<style type="text/css">
+
+		.content {
+			border: 1px solid black;
+			/*float: left;*/
+			width: 800px;
+			margin: 0 auto;
+			
+		}
+
+		.clearfix:after{
+			content: ".";
+			display: block;
+			height: 0;
+			visibility: hidden;
+			clear: both;
+
+		}
+		.content img{
+			float: left;
+			width: 30%;
+		}
+		.foot {
+			border: 2px solid  red;
+			/*float: left;*/
+			
+		}
+	</style>
+</head>
+<body>
+	<div class="content">
+		<img src="E:\Google 云端硬盘\Google 相册\http_imgload.jpg">
+		<p class="clearfix">对于html，有广义和狭义的理解。广义的一般把css和js也算进来了，狭义的就是纯html标签。提问者既然把xhtml也拉进来了，应该是从狭义的方面理解。首先，xhtml可以理解为html+xml，就是用xml的语法来规范html。其实早期html语言是比
+		</p>
+		<img src="E:\Google 云端硬盘\Google 相册\http_imgload.jpg">
+		<p class="clearfix">
+		对于html，有广义和狭义的理解。广义的一般把css和js也算进来了，狭义的就是纯html标签。
+		</p>
+	</div>
+	<div class="content ">
+		
+	</div>
+	
+</body>
+</html>	
