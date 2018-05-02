@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>依赖注入实现</title>
+</head>
+
+<body>
+    <script type="text/javascript">
+    var myController = function($http, $scope) {
+        $scope.test = 1;
+        $http.get();
+    }
+
+    var inject = {
+        dependency: {},
+        register: function(key, value) {
+            this.dependency[key] = value;
+        },
+        resovle: function(deps, func, scope) {
+            var arr = [];
+            for (var i = 0; i < deps.length; i++) {
+                if (this.dependency.hasOwnProperty(deps[i])) {
+                    arr.push(this.dependency[deps[i]]);
+                }
+            }
+            console.log(arr);
+            return function() {
+                debugger;
+                func.apply(scope || {}, arr);
+            }
+
+        }
+    };
+
+    inject.register('$http', {
+
+        'get': function() {
+            console.log('http get');
+        }
+
+    });
+    inject.register('$scope', {
+        'test': ''
+    });
+
+    // '$http','$scope' 这个顺序必须和myController保持一致
+    MyController = inject.resovle(['$http', '$scope'], myController);
+    </script>
+</body>
+
+</html>
