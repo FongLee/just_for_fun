@@ -105,3 +105,84 @@ p('a');
 
 p.call(b, 'b');
 p.apply(b, ['b']);
+
+
+var lifeng = Object.create(null);
+
+Object.defineProperties(lifeng, 
+	{
+		'name': {
+			value: 'lifeng',
+			configurable: true,
+			enumerable: true,
+			writable: true
+		},
+		'email': {value: '342789295@qq.com'},
+		'website': {value: 'fengsite.com'}
+	});
+
+lifeng.sayHello = function () {
+	console.log('lifeng sayHello');
+}
+
+// 继承
+var lifengChild = Object.create(lifeng);
+
+lifengChild.name = 'lifeng child';
+
+// 只有一个属性 name
+Object.keys(lifengChild);
+
+// 子对象的函数调用父对象的函数
+lifengChild.sayHello = function() {
+	Object.getPrototypeOf(this).sayHello.call(this);
+
+	console.log('this is lifengChild hello');
+}
+
+// 组合
+
+function composition(target, source) {
+
+	Object.getOwnPropertyNames(source).forEach(
+		function (key) {
+			Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+		});
+}
+
+var artist = Object.create(null);
+
+artist.sing = function () {
+	console.log('artist is singing');
+} 
+
+composition(lifengChild, artist);
+
+// ["name", "sayHello", "sing"]
+Object.keys(lifengChild)
+
+// Prototype 
+
+function Person(name, email, website) {
+	debugger;
+	this.name = name;
+	this.email = email;
+	this.website = website;
+}
+
+Person.prototype.sayHello = function() {
+	console.log('Person sayHello');
+}
+
+function Student(name, email ,website, sex) {
+
+	Object.getPrototypeOf(Student.prototype).constructor.call(this, name, email, website);
+	this.sex = sex;
+}
+
+Student.prototype = Object.create(Person.prototype);
+
+Student.prototype.constructor = Student;
+
+var student = new Student('lifeng', '342789295@qq.com', 'fengsite.com', 'man');
+
