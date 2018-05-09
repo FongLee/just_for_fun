@@ -15,7 +15,13 @@ var Person = function(name, email, website) {
 var lifeng = new Person('lifeng', '342789295@qq.com', 'fengsite.com');
 
 lifeng.sayHello();
-
+// constructor: ƒ (name, email, website)
+// __proto__
+Person.prototype
+// constructor: ƒ (name, email, website)
+// __proto__
+lifeng.__proto__
+lifeng.constructor.prototype
 
 var lifeng = Object.create(null);
 
@@ -55,6 +61,10 @@ Object.defineProperty(lifeng, 'age', {
 lifeng.age = 100;
 alert(lifeng.age);
 
+// undefined
+lifeng.__proto__
+lifeng.prototype
+
 var lifeng = {
     name: 'lifeng',
     email: '342789295@qq.com',
@@ -75,6 +85,9 @@ var lifeng = {
 lifeng.birth_year;
 lifeng.birth_year = 2000;
 lifeng.birth_year;
+
+// 有值
+lifeng.__proto__
 
 function print(text) {
     console.log('value is ' + this.value + '.text is ' + text);
@@ -140,6 +153,9 @@ lifengChild.sayHello = function() {
 	console.log('this is lifengChild hello');
 }
 
+// 取不到值,但是Object.getPrototypeOf(lifengChild) 有值
+lifengChild.__proto__
+
 // 组合
 
 function composition(target, source) {
@@ -185,4 +201,27 @@ Student.prototype = Object.create(Person.prototype);
 Student.prototype.constructor = Student;
 
 var student = new Student('lifeng', '342789295@qq.com', 'fengsite.com', 'man');
+// constructor
+Student.prototype
 
+// Object.create函数实现
+function clone(proto) {
+	function NewObj {}
+	NewObj.prototype = proto;
+
+	NewObj.prototype.contructor = NewObj;
+
+	return NewObj;
+}
+
+
+// keys函数
+function keys(obj) {
+	var ret = [];
+	for(var key in obj) {
+		if(obj.hasOwnProperty(key)) {
+			ret.push(key);
+		}
+	}
+	return ret;
+}
