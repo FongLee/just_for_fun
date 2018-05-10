@@ -73,12 +73,12 @@ var lifeng = {
     get birth_year() {
         var d = new Date();
         var year = d.getFullYear();
-        return year - age;
+        return year - this.age;
     },
     set birth_year(year) {
         var d = new Date();
         var currYear = d.getFullYear();
-        age = currYear - year;
+        this.age = currYear - year;
     }
 };
 
