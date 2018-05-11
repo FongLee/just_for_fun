@@ -35,5 +35,46 @@ function extend(Child, Parent) {
 	Child.uber = Parent.prototype;
 }
 
+// 非构造函数的继承
+var animal = {
+	species: "动物"
+};
 
+var cat = Object.create(animal);
 
+cat.name = 'cat';
+
+// 浅拷贝
+function copy(obj) {
+	// 检测对象的原型链是否指向构造函数的prototype对象的
+	// obj.constructor === Array
+	var ret = obj instanceof Array ? [] : {}; 
+	for(var key in obj) {
+		if(obj.hasOwnProperty(key)) {
+			ret[key] = obj[key];
+		}
+	}
+	return ret;
+}
+
+function deepCopy(obj) {
+	// typeof null "object"
+	// typeof undefined "undefined"
+	if(typeof obj !== 'object') {
+		return obj;
+	}
+
+	// Array.isArray ECMAScript5
+	var ret = Array.isArray(obj) ? : {};
+	for(var key in obj) {
+		if(obj.hasOwnProperty(key)) {
+			if(typeof obj[key] === 'object') {
+				ret[key] = deepCopy(obj[key]);
+			} else {
+				ret[key] = obj[key];
+			}
+
+		}
+	}
+	return ret;
+}
