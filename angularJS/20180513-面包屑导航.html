@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>面包屑导航</title>
+	<!-- <link rel="stylesheet" type="text/css" href="css/bootstrap-3.0.0/css/bootstrap.css"> -->
+
+	<style type="text/css">
+		
+		.crumb ul li{
+		   	float: left;
+		   	list-style-type: none;
+		  }
+
+		.crumb ul li a {
+			display: block;
+			margin: 0 10px 0 0;
+			height: 30px;
+			background-color: #3498db;
+			color: #fff;
+			text-decoration: none;
+			padding: 10px 50px 0 50px;
+			position: relative;
+			
+		}
+		
+		.crumb ul li a:after {
+			content: "";
+			border-top: 20px solid transparent ;
+			border-bottom: 20px solid transparent  ;
+			border-left: 20px solid #3498db;
+			position: absolute;
+			right: -20px;
+			top: 0;
+			z-index: 5;
+		}
+
+		.crumb ul li a:before {
+			content: "";
+			border-top: 20px solid #3498db;
+			border-bottom: 20px solid #3498db;
+			border-left: 20px solid white;
+			position: absolute;
+			left: 0px;
+			top: 0;
+			
+		}
+
+		.crumb ul li:first-child a {
+			border-top-left-radius: 20px;
+			border-bottom-left-radius: 20px;
+		}
+
+		.crumb ul li:first-child a:before {
+			display: none;
+		}
+
+		.crumb ul li:last-child a {
+			padding-right: 60px;
+			border-top-right-radius: 20px;
+			border-bottom-right-radius: 20px;
+		}
+
+		.crumb ul li:last-child a:after {
+			display: none;
+		}
+
+	</style>
+</head>
+<body>
+	
+	<!-- <div class="panel panel-primary">
+		<div class="panel-heading">
+			<div class="panel-title">面包屑导航</div>
+		</div>
+	</div>
+	<div class="panel-body">
+		<ol class="breadcrumb">
+			<li>Home</li>
+			<li>2018</li>
+			<li>11</li>
+		</ol>
+	</div> -->
+
+	<div class="crumb">
+		<ul>
+			<li><a href="#">导航栏1</a></li>
+			<li><a href="#">导航栏2</a></li>
+			<li><a href="#">导航栏3</a></li>
+			<li><a href="#">导航栏4</a></li>
+		</ul>
+	</div>
+<div> 
+
+</body>
+</html>
