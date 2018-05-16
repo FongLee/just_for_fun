@@ -55,3 +55,35 @@ window.b // undefined
 function f(argument) {
 	console.log(this);
 }
+
+// 获取顶层对象
+function getGlobal () {
+	// 浏览器和web Worker(运行在浏览器后台的JavaScript)
+	if(self !== 'undefined') {
+		return self;
+	}
+
+	// 浏览器
+	if(window !== 'undefined') {
+		return window;
+	}
+	// Node环境
+	if(global !== 'undefined') {
+		return global;
+	}
+}
+
+// 数组的解构赋值
+let [a, b, c] = [1, 2, 3];
+
+// x=null,默认值，=== undefined，才会使用默认值
+let [x=1] = [null];
+
+
+// fooTest "aaa" 先找到同名属性，然后赋值给对应的变量，
+let {foo: fooTest} = {foo: 'aaa', bar: 'bbb'};
+
+// x = 1
+// y = 5
+var {x, y=5} = {x: 1};
+
