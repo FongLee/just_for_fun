@@ -87,3 +87,87 @@ let {foo: fooTest} = {foo: 'aaa', bar: 'bbb'};
 // y = 5
 var {x, y=5} = {x: 1};
 
+// 报错
+let {foo: {bar}} = {baz: 'baz'};
+
+
+let arr=[1, 2, 3];
+let {0: first, [arr.length - 1] : last} = arr;
+
+// 1
+first
+// 3
+last
+
+// 字符串的解构赋值
+const [a, b, c, d, e] = 'hello';
+
+// 数值和布尔值的解构赋值
+let {toString: s} = 123;
+
+let {toString: s} = true;
+
+// 函数的解构赋值
+function add([a, b]) {
+	return a + b;
+}
+
+add([1, 2]);
+
+// 函数的解构赋值 使用默认值
+function add({a=1, b=2} = {}) {
+	return a + b;
+}
+
+// 5
+add({a:3});
+
+function add({a, b} = {a: 0, b: 0}) {
+	return a + b;
+}
+
+// [3, undefined],因为已经指定了函数的默认参数
+add({a:3});
+
+// 不能使用括号的情况，1 变量声明的时候 2 函数参数 3 赋值语句的模式
+
+// 下面情况不报错
+[(a)] = [3];
+({p:(b)} = {});
+[(parseInt.prop)] = [3];
+
+// 解构赋值的作用
+
+// 交换变量的值
+var x = 3, y = 4;
+[x, y] = [y, x];
+
+// 函数返回多个值，方便取值
+function test() {
+	return [1,2];
+}
+
+let [a, b] = test();
+
+// 函数参数
+function f({x, y,z }) {
+	return x + y + z;
+}
+
+f({z:1, y: 2, x: 3});
+
+// 提取json数据
+let jsonData = {
+	name : 'lifeng'
+}
+
+let {name} = jsonData;
+
+// 函数参数默认值
+
+// 遍历Map解构
+const map = new Map();
+map.set('name', 'hello');
+for(let [key, value] of map) {
+	console.log(key + ":" + value);
+}
