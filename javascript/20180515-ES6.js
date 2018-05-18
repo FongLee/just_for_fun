@@ -171,3 +171,14 @@ map.set('name', 'hello');
 for(let [key, value] of map) {
 	console.log(key + ":" + value);
 }
+
+// 表示一个字符
+'\z'
+'\172'
+'\u007A'
+'\u{7A}'
+
+let s = '𠮷a';
+for(let ch of s) {
+	console.log(ch.codePointAt(0).toSting(16));
+}
