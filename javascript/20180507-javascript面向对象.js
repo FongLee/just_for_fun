@@ -225,3 +225,62 @@ function keys(obj) {
 	}
 	return ret;
 }
+
+function Person(name) {
+	this.name='lifeng';
+	this.closure = function() {
+		console.log(name);
+	}
+}
+// 执行上下文：包括变量对象,函数链，this
+// 变量对象包括形参，函数声明，变量声明	
+function foo() {
+	console.log(a);
+	a = 1;
+}
+
+// ReferenceError
+foo();
+
+function foo() {
+	a = 1;
+	console.log(a);
+}
+// 1
+foo();
+
+function foo() {
+	console.log(a);
+	var a = 1;
+}
+// undefined
+foo();
+
+var foo = function () {
+	console.log('foo1');
+
+}
+
+// foo1
+foo();
+
+var foo = function() {
+	console.log('foo2');
+}
+// foo2
+foo();
+
+
+function foo() {
+	console.log('foo1');
+}
+// foo2
+// 这个函数会被下面的函数覆盖
+foo();
+// 函数声明会覆盖砂上面的声明
+function foo() {
+	console.log('foo2');
+}
+// foo2
+foo();
+
