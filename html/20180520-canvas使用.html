@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            canvas使用
+        </title>
+        <style type="text/css">
+            canvas {
+			border: 1px solid black;
+		}
+        </style>
+        <script type="text/javascript">
+            function draw() {
+			var myCanvas = document.getElementById('stockGraph');
+			var ctx = myCanvas.getContext('2d');
+			drawCir(ctx);
+			
+		}
+
+		function drawRect(ctx) {
+			// 填充矩形
+			ctx.fillRect(25, 25, 100, 100);
+			// 清除矩形
+			ctx.clearRect(45, 45, 60, 60);
+			// 矩形边框
+			ctx.strokeRect(50, 50, 50, 50);
+		}
+
+		function drawTank(ctx) {
+			ctx.beginPath();
+			ctx.moveTo(75, 75);
+			ctx.lineTo(95, 95);
+			ctx.lineTo(95, 50);
+			ctx.fill();
+		}
+
+		function drawCir(ctx) {
+			ctx.beginPath();
+			ctx.arc(75, 75, 50, 0, Math.PI* 2, true);
+			ctx.moveTo(110, 75);
+			ctx.arc(75, 75, 35, 0, Math.PI, false);
+			ctx.arc(60, 65, 5, 0, Math.PI*2, false);
+			ctx.arc(90, 65, 5, 0, Math.PI*2, true);
+			ctx.stroke();
+		}
+        </script>
+    </head>
+    <body onload="draw()">
+        <canvas height="150" id="stockGraph" width="150">
+            current stock price: $3.15 +0.15
+        </canvas>
+    </body>
+</html>
