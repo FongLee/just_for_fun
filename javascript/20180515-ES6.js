@@ -178,7 +178,43 @@ for(let [key, value] of map) {
 '\u007A'
 '\u{7A}'
 
+// 实际四个字节存储
+var s = "𠮷";
+//长度显示的2 
+s.length
+
+s.charAt(0);
+s.charAt(1);
+// 返回前两个字节的数据
+// 55362
+s.charCodeAt(0);
+// 返回后两个字节的数据
+// 57271
+s.charCodeAt(1);
+
+// 视为三个字符
 let s = '𠮷a';
+// 134071
+s.codePointAt(0);
+// 57271
+s.codePointAt(1);
+// 97
+s.codePointAt(2);
+
 for(let ch of s) {
-	console.log(ch.codePointAt(0).toSting(16));
+	console.log(ch.codePointAt(0).toString(16));
+}
+
+// 不能识别32位的UTF-16字符
+String.fromCharCode(0x20BB7);
+
+String.fromCodePoint(0x20BB7);
+
+for(let code of 'fos') {
+	console.log(code);
+}
+
+var str = String.fromCodePoint(0x20BB7);
+for(let i = 0; i < str.length; i++) {
+	console.log(str[i]);
 }
