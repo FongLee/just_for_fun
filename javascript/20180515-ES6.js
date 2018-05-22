@@ -218,3 +218,63 @@ var str = String.fromCodePoint(0x20BB7);
 for(let i = 0; i < str.length; i++) {
 	console.log(str[i]);
 }
+
+// normalize 用来将不同表示方法统一为同样的形式
+'\u01D1'.normalize() == '\u004F\u030C'.normalize();
+
+let s = "hello world";
+s.includes('hello');
+s.startsWith('hello');
+s.endsWith('d');
+
+// "nana"
+"na".repeat(2);
+
+// 补全字符串
+// "ababx" 头部补全
+'x'.padStart(5, 'ab');
+
+// 尾部补全
+'x'.padEnd(5, 'ab');
+
+// 为数值补指定位数
+// "0000000001"
+'1'.padStart(10, '0');
+// "0000000012"
+'12'.padStart(10, '0');
+
+// 提示字符串格式
+'12'.padStart(10, 'YYYY-MD-DD');
+
+// 模板字符串
+`test
+换行
+`
+let name='lifeng';
+let str= `name is ${name}`;
+
+let str='(name) => `${name}`';
+let fn = eval.call(null, str);
+fn('jack');
+
+let template = `
+<ul>
+  <% for(let i=0; i < data.supplies.length; i++) { %>
+    <li><%= data.supplies[i] %></li>
+  <% } %>
+</ul>
+`;
+
+"
+<ul>
+  `); 
+  for(let i=0; i < data.supplies.length; i++) {  
+  echo(`
+    <li>`); 
+  echo(  data.supplies[i]  ); 
+  echo(`</li>
+  `); 
+  }  
+  echo(`
+</ul>
+"
