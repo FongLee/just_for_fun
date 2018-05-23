@@ -257,24 +257,33 @@ let str='(name) => `${name}`';
 let fn = eval.call(null, str);
 fn('jack');
 
-let template = `
-<ul>
-  <% for(let i=0; i < data.supplies.length; i++) { %>
-    <li><%= data.supplies[i] %></li>
-  <% } %>
-</ul>
-`;
+const set = new Set([1, 2, 3, 4, 4]);
+// [1, 2, 3, 4]
+[...set]
 
-"
-<ul>
-  `); 
-  for(let i=0; i < data.supplies.length; i++) {  
-  echo(`
-    <li>`); 
-  echo(  data.supplies[i]  ); 
-  echo(`</li>
-  `); 
-  }  
-  echo(`
-</ul>
-"
+const items = new Set([1, 2, 3, 5, 5]);
+items.size;
+
+// NaN !== NaN
+// set内部使用一种类似于===的方法判断是否相等，但是NaN添加只有一个个
+let set = new Set();
+set.add(NaN);
+set.add(NaN);
+
+let set = new Set();
+set.add({});
+set.add({});
+
+set.has({});
+set.add(1);
+set.add(2);
+set.delete(2);
+
+const items = new Set([1, 2, 3, 4, 5]);
+const array = Array.from(items);
+
+// 去除重复成员的方法
+function dedupe(array) {
+	return Array.from(new Set(array));
+}
+
