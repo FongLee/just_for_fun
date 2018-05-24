@@ -287,3 +287,20 @@ function dedupe(array) {
 	return Array.from(new Set(array));
 }
 
+for (let item of items.keys()) {
+	console.log(item);
+}
+
+for(let item of items.values()) {
+	console.log(item);
+}
+
+for(let item of items.entries()) {
+	console.log(item);
+}
+
+for(let item of items) {
+	console.log(item);
+}
+
+items.forEach((key, value) => console.log(key + ':' + value));
