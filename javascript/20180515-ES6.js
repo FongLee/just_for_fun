@@ -304,3 +304,21 @@ for(let item of items) {
 }
 
 items.forEach((key, value) => console.log(key + ':' + value));
+
+let set = new Set([1, 2]);
+let arr = [...set];
+
+// {2, 4}
+set = new Set([...set].map(x=> x*2));
+
+let set = new Set([1, 2]);
+
+// {2}
+set = new Set([...set].filter(x => (x % 2) == 0));
+
+let arr = [3, 5, 5];
+// [3, 5]
+let unique = [...new Set(arr)];
+
+
+
