@@ -320,5 +320,39 @@ let arr = [3, 5, 5];
 // [3, 5]
 let unique = [...new Set(arr)];
 
+let a = new Set([1, 2, 3]);
+let b = new Set([2, 3, 4]);
 
+// 并集 {1, 2, 3, 4}
+let union = new Set([...a, ...b]);
+// 交集 {2, 3}
+let intersect = new Set([...a].filter(x=> b.has(x)));
+// 差集 {1}
+let difference = new Set([...a].filter(x=> !b.has(x)));
 
+// 遍历产生新的数组
+set = new Set([...set].map(val => val * 2));
+
+set = new Set(Array.from(set, val=> val * 3));
+
+const a = [[1, 2], [3, 4]];
+const ws = new WeakSet(a);
+
+const m = new Map();
+const o = {p: 'hello world'};
+
+m.set(o, 'content');
+// "content"
+m.get(o);
+// true
+m.has(o);
+// true
+m.delete(o);
+// false
+m.has(o)
+
+const map = new Map([
+	['name', 'zhangsan'],
+	['title', 'author']
+
+	]);
