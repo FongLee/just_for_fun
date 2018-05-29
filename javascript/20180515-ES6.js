@@ -352,7 +352,84 @@ m.delete(o);
 m.has(o)
 
 const map = new Map([
-	['name', 'zhangsan'],
-	['title', 'author']
+    ['name', 'zhangsan'],
+    ['title', 'author']
 
-	]);
+]);
+
+const set = new Set([['foo', 2], ['bar', 2]]);
+const map = new Map(set);
+// 2
+map.get('foo');
+// true
+map.has('foo');
+
+const m2 = new Map([['foo', 3]]);
+const m3 = new Map(m2);
+// 3
+m3.get('foo');
+
+const map = new Map();
+map.set(['a'], 555);
+// undefined
+map.get(['a']);
+
+// map 严格相等时，键才认为不同
+// undefine 和 null 不同的键
+// NaN虽然不是严格相等，但是认为是一样的键
+
+const map = new Map([['no', 3], ['fo', 5]]);
+
+// no fo
+for(let key of map.keys()) {
+	console.log(key);
+}
+
+// 3 5
+for(let value of map.values()) {
+	console.log(value);
+}
+
+// no 3 fo 5
+for(let entry of map.entries()) {
+	console.log(entry[0], entry[1]);
+}
+
+// no 3 fo 5
+for(let [key, value] of map) {
+	console.log(key, value);
+}
+
+// 转换为数组
+// ["no", "fo"]
+[...map.keys()];
+
+// [3, 5]
+[...map.values()];
+
+// ["no", 3] ["fo", 5]
+[...map];
+
+// 遍历和过滤
+// {"no" => 3}
+const map1 = new Map([...map].filter(([key, value]) => value === 3));
+
+// {"no" => 6, "fo" => 10}
+const map2 = new Map([...map].map(([key, value]) => [key, value = value * 2]));
+
+// key is no, value is 3
+// key is fo, value is 5
+map.forEach(function(value, key, map) {
+	console.log("key is %s, value is %d", key, value);
+});
+
+// key is no, value is 3
+// key is fo, value is 5
+const reporter = {
+	report : function (key, value) {
+		console.log("key is %s, value is %d", key, value);
+	}
+};
+map.forEach(function(value, key, map) {
+	this.report(key, value);
+}, reporter);
