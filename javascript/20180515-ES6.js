@@ -433,3 +433,68 @@ const reporter = {
 map.forEach(function(value, key, map) {
 	this.report(key, value);
 }, reporter);
+
+// Map转换为对象
+function strMapToObj(strMap) {
+	let obj = Object.create(null);
+	for(let [key, value] of strMap) {
+		obj[key] = value;
+	}
+	return obj;
+}
+
+// 对象转换为Map
+function objToStrMap(obj) {
+	let map = new Map();
+	for(let key of Object.keys(obj)) {
+		map.set(key, obj[key]);
+	}
+
+	return map;
+}
+
+// Map转为Json
+function strMaptoJson(strMap) {
+	return JSON.stringify(strMapToObj(strMap));
+}
+
+// 转换为数组Json
+function mapToArrayJson(map) {
+	return JSON.stringify([...map]);
+}
+
+// JSON转换为Map
+function jsonTostrMap(jsonStr) {
+	return objToStrMap(JSON.parse(jsonStr));
+}
+
+// 数组Json转换为Map
+function jsonToMap(jsonStr) {
+	return new Map(JSON.parse(jsonStr));
+}
+
+// WeakMap只接收对象作为键名，键名是弱引用，键名指向的对象的引用对象不会增加，但是
+// 键值会正常引用
+// 没有keys values entries方法
+// 以DOM节点作为键名
+let myElement = document.getElementById('logo');
+let myWeakMap = new WeakMap();
+
+myWeakMap.set(myElement, {count: 0});
+myElement.addEventListener('click', function() {
+	let myCount = myWeakMap.get(myElement);
+	myCount.count++;
+});
+
+// Count内部属性 _count 是实例的弱引用
+const _count = new WeakMap();
+class Count {
+	constructor(counter) {
+		_count.set(this, counter);
+	}
+}
+
+// 函数,默认参数每次是重新求值的
+function log(x, y = 1) {
+	console.log(x, y);
+}
