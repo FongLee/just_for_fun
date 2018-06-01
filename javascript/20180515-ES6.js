@@ -551,3 +551,14 @@ foo(undefined, 2);
 (function(a, b = 2, c){console.log(a, b, c)}).length;
 
 // 一旦设置了参数的默认值，函数进行声明初始化时，会形成一个单独的作用域。
+
+function add(...values) {
+	let sum = 0;
+	for(let value of values) {
+		sum += value;
+	}
+	return sum;
+}
+
+// 9
+add(2, 3, 4);
