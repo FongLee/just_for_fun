@@ -562,3 +562,21 @@ function add(...values) {
 
 // 9
 add(2, 3, 4);
+
+//函数参数使用了默认值，解构赋值，扩展运算符，函数内部就不准设置严格模式，但是
+//可以通过设置全局严格模式，或者将函数包在一个立即执行函数之中。
+//
+(function foo() {
+	'use strict'
+	return test(a = 1) {
+		return a;
+	};
+}())
+
+function foo() {
+
+}
+// 返回函数的名字
+foo.name;
+// 这个和ES6标准不符，在Chrome测试，返回""，理论上应该返回"bound foo"
+foo.bind({}).name;
