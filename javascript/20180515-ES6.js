@@ -580,3 +580,16 @@ function foo() {
 foo.name;
 // 这个和ES6标准不符，在Chrome测试，返回""，理论上应该返回"bound foo"
 foo.bind({}).name;
+
+var f = v => v;
+// 等价于
+function f (v) {
+	return v;
+}
+
+// 返回一个对象
+let = getTempItem = id => ({id: id});
+
+// 箭头函数体内的this，指向的是定义时所在的对象，而不是使用时所在的对象
+
+ 
