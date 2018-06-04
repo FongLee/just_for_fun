@@ -592,4 +592,17 @@ let = getTempItem = id => ({id: id});
 
 // 箭头函数体内的this，指向的是定义时所在的对象，而不是使用时所在的对象
 
- 
+function foo() {
+	setTimeout(() => {
+		console.log(this.id);
+	}, 100)
+}
+
+// ES5
+function foo() {
+	var _this = this;
+
+	setInterval(function () {
+		console.log(_this.id);
+	})
+}
