@@ -629,3 +629,38 @@ function factorial(n, total) {
 	return factorial(n-1, n * total);
 }
 
+
+// 尾递归优化过后的数列
+function fibonacci(n, ac1 = 1, ac2 = 1) {
+	if(n <= 1) {
+		return ac2;
+	}
+
+	return fibonacci(n-1, ac2, ac1+ac2); 
+}
+
+// 柯里化是将使用多个参数的函数转换成一系列使用一个参数的函数的技术
+
+// 通用版本
+var curry = function(func) {
+	var args = [].slice.call(arguments, 1);
+	return function() {
+		var newArgs = args.concat([].slice.call(arguments));
+		return func.apply(this, newArgs);
+	}
+}
+
+// improvement
+var curry = function(func, args) {
+	var args = args || [];
+	
+	return function() {
+		var newArgs = args.concat([].slice.call(arguments));
+		debugger;
+		if(newArgs.length < func.length) {
+			return curry.apply(this, func, newArgs)
+		} else {
+			return func.apply(this, newArgs);
+		}
+	}
+}
