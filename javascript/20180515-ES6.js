@@ -653,14 +653,34 @@ var curry = function(func) {
 // improvement
 var curry = function(func, args) {
 	var args = args || [];
-	
+
 	return function() {
 		var newArgs = args.concat([].slice.call(arguments));
 		debugger;
-		if(newArgs.length < func.length) {
+		if(newArgs.length < 2) {
 			return curry.apply(this, func, newArgs)
 		} else {
 			return func.apply(this, newArgs);
 		}
 	}
 }
+
+// 尾递归优化的实现
+function trampoline(f) {
+	while(f && f instanceof Function) {
+		f = f();
+	}
+
+	return f;
+}
+
+function sum(x, y) {
+	if(y > 0) {
+		return sum(x + 1, y -1);
+	}
+
+	return x;
+}
+
+trampoline(sum(1, 10000));
+
