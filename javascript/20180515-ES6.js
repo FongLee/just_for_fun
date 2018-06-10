@@ -607,10 +607,25 @@ function foo() {
 	})
 }
 
-let insert = (value) => ({into: (array) => ({after: (afterValue) => {
-  array.splice(array.indexOf(afterValue) + 1, 0, value);
-  return array;
-}})});
+
+function insert(value) {
+	return {
+		info: function(array) {
+			return {
+				after: function(afterValue) {
+					array.splice(array.indexOf(afterValue) + 1, 0, value);
+					return array;
+				}
+			}
+		}
+	}
+}
+
+let insert = (value) => ({info: (array)=> ({after: (afterValue)=> {array.splice(array.indexOf(afterValue) +1, 0, value);
+	return array;}})});
+
+// [1, 2, 3]
+insert(2).info([1, 3]).after(1);
 
 const pipeline = (...funcs) =>
   val => funcs.reduce((a, b) => b(a), val);
@@ -684,3 +699,6 @@ function sum(x, y) {
 
 trampoline(sum(1, 10000));
 
+foo:bar;
+// = 
+bar.bind(foo);
