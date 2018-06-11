@@ -122,20 +122,19 @@ p.apply(b, ['b']);
 
 var lifeng = Object.create(null);
 
-Object.defineProperties(lifeng, 
-	{
-		'name': {
-			value: 'lifeng',
-			configurable: true,
-			enumerable: true,
-			writable: true
-		},
-		'email': {value: '342789295@qq.com'},
-		'website': {value: 'fengsite.com'}
-	});
+Object.defineProperties(lifeng, {
+    'name': {
+        value: 'lifeng',
+        configurable: true,
+        enumerable: true,
+        writable: true
+    },
+    'email': { value: '342789295@qq.com' },
+    'website': { value: 'fengsite.com' }
+});
 
-lifeng.sayHello = function () {
-	console.log('lifeng sayHello');
+lifeng.sayHello = function() {
+    console.log('lifeng sayHello');
 }
 
 // 继承
@@ -148,9 +147,9 @@ Object.keys(lifengChild);
 
 // 子对象的函数调用父对象的函数
 lifengChild.sayHello = function() {
-	Object.getPrototypeOf(this).sayHello.call(this);
+    Object.getPrototypeOf(this).sayHello.call(this);
 
-	console.log('this is lifengChild hello');
+    console.log('this is lifengChild hello');
 }
 
 // 取不到值,但是Object.getPrototypeOf(lifengChild) 有值
@@ -160,17 +159,17 @@ lifengChild.__proto__
 
 function composition(target, source) {
 
-	Object.getOwnPropertyNames(source).forEach(
-		function (key) {
-			Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
-		});
+    Object.getOwnPropertyNames(source).forEach(
+        function(key) {
+            Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+        });
 }
 
 var artist = Object.create(null);
 
-artist.sing = function () {
-	console.log('artist is singing');
-} 
+artist.sing = function() {
+    console.log('artist is singing');
+}
 
 composition(lifengChild, artist);
 
@@ -180,20 +179,20 @@ Object.keys(lifengChild)
 // Prototype 
 
 function Person(name, email, website) {
-	debugger;
-	this.name = name;
-	this.email = email;
-	this.website = website;
+    debugger;
+    this.name = name;
+    this.email = email;
+    this.website = website;
 }
 
 Person.prototype.sayHello = function() {
-	console.log('Person sayHello');
+    console.log('Person sayHello');
 }
 
-function Student(name, email ,website, sex) {
+function Student(name, email, website, sex) {
 
-	Object.getPrototypeOf(Student.prototype).constructor.call(this, name, email, website);
-	this.sex = sex;
+    Object.getPrototypeOf(Student.prototype).constructor.call(this, name, email, website);
+    this.sex = sex;
 }
 
 Student.prototype = Object.create(Person.prototype);
@@ -206,58 +205,58 @@ Student.prototype
 
 // Object.create函数实现
 function clone(proto) {
-	function NewObj {}
-	NewObj.prototype = proto;
+    function NewObj {}
+    NewObj.prototype = proto;
 
-	NewObj.prototype.contructor = NewObj;
+    NewObj.prototype.contructor = NewObj;
 
-	return NewObj;
+    return NewObj;
 }
 
 
 // keys函数
 function keys(obj) {
-	var ret = [];
-	for(var key in obj) {
-		if(obj.hasOwnProperty(key)) {
-			ret.push(key);
-		}
-	}
-	return ret;
+    var ret = [];
+    for (var key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            ret.push(key);
+        }
+    }
+    return ret;
 }
 
 function Person(name) {
-	this.name='lifeng';
-	this.closure = function() {
-		console.log(name);
-	}
+    this.name = 'lifeng';
+    this.closure = function() {
+        console.log(name);
+    }
 }
 // 执行上下文：包括变量对象,函数链，this
 // 变量对象包括形参，函数声明，变量声明	
 function foo() {
-	console.log(a);
-	a = 1;
+    console.log(a);
+    a = 1;
 }
 
 // ReferenceError
 foo();
 
 function foo() {
-	a = 1;
-	console.log(a);
+    a = 1;
+    console.log(a);
 }
 // 1
 foo();
 
 function foo() {
-	console.log(a);
-	var a = 1;
+    console.log(a);
+    var a = 1;
 }
 // undefined
 foo();
 
-var foo = function () {
-	console.log('foo1');
+var foo = function() {
+    console.log('foo1');
 
 }
 
@@ -265,22 +264,99 @@ var foo = function () {
 foo();
 
 var foo = function() {
-	console.log('foo2');
+    console.log('foo2');
 }
 // foo2
 foo();
 
 
 function foo() {
-	console.log('foo1');
+    console.log('foo1');
 }
 // foo2
 // 这个函数会被下面的函数覆盖
 foo();
 // 函数声明会覆盖砂上面的声明
 function foo() {
-	console.log('foo2');
+    console.log('foo2');
 }
 // foo2
 foo();
 
+// 共享传递是传递对象的引用的副本
+var obj = {
+    value: 1
+}
+
+function foo(o) {
+    o = 2;
+    console.log(o);
+}
+
+foo(obj);
+console.log(obj.value);
+
+// 实现call
+var foo = {
+    value: 1
+};
+
+function bar() {
+    console.log(this.value);
+}
+
+bar.call(foo);
+
+Function.prototype.call2 = function(context) {
+    context.fn = this;
+
+    context.fn();
+
+    delete context.fn;
+}
+
+// 1
+Function.prototype.call3 = function(context) {
+    var args = [];
+    for (var i = 0; i < arguments.length; i++) {
+        args.push('arguments[' + i + ']');
+    }
+
+    context.fn = this;
+
+    eval('context.fn (' + args + ')');
+
+    delete context.fn;
+
+
+}
+
+Function.prototype.call4 = function(context) {
+    debugger;
+    var context = context || window;
+    context.fn = this;
+
+    var args = [];
+    for (var i = 1; i < arguments.length; i++) {
+        args.push('arguments[' + i + ']');
+    }
+
+    var ret = eval('context.fn(' + args + ')');
+    delete context.fn;
+    return ret;
+}
+
+function bar(name, age) {
+    console.log(value);
+    return {
+        value: this.value,
+        name: name,
+        age: age
+    }
+}
+
+var value = 3;
+
+bar.call4(null);
+
+bar.call4(obj, 'lifeng', 23);
