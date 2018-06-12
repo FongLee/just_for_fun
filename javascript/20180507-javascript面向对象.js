@@ -360,3 +360,34 @@ var value = 3;
 bar.call4(null);
 
 bar.call4(obj, 'lifeng', 23);
+
+Function.prototype.apply = function(context, arr) {
+    var context = Object(context) || window;
+
+    context.fn = this;
+
+    var args = [];
+
+    var ret;
+
+    if (!arr) {
+        ret = context.fn();
+    } else {
+        for (var i = 0; i < arr.length; i++) {
+            args.push('arr[' + i + ']');
+        }
+        ret = eval('context.fn(' + args + ')');
+    }
+
+    delete context.fn;
+    return ret;
+}
+
+// bind的模拟实现
+Function.prototype.bind = function(context) {
+	var self = this;
+
+	return function() {
+		return self.apply(context);
+	}
+}
