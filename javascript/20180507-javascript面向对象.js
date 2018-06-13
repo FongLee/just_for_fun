@@ -362,6 +362,7 @@ bar.call4(null);
 bar.call4(obj, 'lifeng', 23);
 
 Function.prototype.apply = function(context, arr) {
+	debugger;
     var context = Object(context) || window;
 
     context.fn = this;
@@ -384,10 +385,82 @@ Function.prototype.apply = function(context, arr) {
 }
 
 // bind的模拟实现
-Function.prototype.bind = function(context) {
+Function.prototype.bind2 = function(context) {
 	var self = this;
 
 	return function() {
 		return self.apply(context);
 	}
 }
+
+Function.prototype.bind2 = function (context) {
+
+	var self = this;
+
+	var args = Array.prototype.slice.call(arguments, 1);
+
+	return function() {
+		args = args.concat(Array.prototype.slice.call(arguments));
+		return self.apply(context, args);
+	}
+}
+
+// 一个绑定函数也可以使用new创建对象，这时候提供的this值会被忽略
+Function.prototype.bind2 = function(context) {
+	debugger;
+	var self = this;
+	var args = Array.prototype.slice.call(arguments, 1);
+
+	var fRet = function() {
+		debugger;
+		var bindArgs = Array.prototype.slice.call(arguments);
+		return self.apply(this instanceof fRet ? this : context, args.concat(bindArgs));
+	}
+	// rRet的原型指向实例的原型
+	fRet.prototype = this.prototype;
+	return fRet;
+}
+
+Function.prototype.bind2 = function(context) {
+	debugger;
+
+	if(typeof this != 'function') {
+		throw new Error('it is not a funciton.');
+	}
+	var self = this;
+
+	var args = Array.prototype.slice.call(arguments, 1);
+
+	var FNOP = function() {};
+	var fRet = function () {
+		var bindArgs = Array.prototype.slice.call(arguments);
+		return self.apply(this instanceof FNOP ? this : context, args.concat(bindArgs));
+	}
+
+	FNOP.prototype = this.prototype;
+	fRet.prototype = new FNOP();
+
+	return fRet;
+}
+
+var value = 2;
+
+var foo = {
+    value: 1
+};
+
+function bar(name, age) {
+    this.habit = 'shopping';
+    console.log(this.value);
+    console.log(name);
+    console.log(age);
+}
+
+bar.prototype.friend = 'kevin';
+
+var bindFoo = bar.bind(foo, 'daisy');
+var bindFoo2 = bar.bind2(foo, 'daisy');
+
+var obj = new bindFoo('18');
+var obj = new bindFoo2('18');
+
