@@ -464,3 +464,16 @@ var bindFoo2 = bar.bind2(foo, 'daisy');
 var obj = new bindFoo('18');
 var obj = new bindFoo2('18');
 
+// 直接写入变量和函数，作为对象的属性和方法
+const foo = 'bar';
+const bar = {foo};
+
+function f(x, y) {
+	return {x, y};
+}
+
+// 等同于 属性名为变量名, 属性值为变量的值
+function f(x, y) {
+	return {x: x, y: y};
+}
+
