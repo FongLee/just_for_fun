@@ -702,3 +702,22 @@ trampoline(sum(1, 10000));
 foo:bar;
 // = 
 bar.bind(foo);
+
+let s = 'hello world';
+
+// true
+s.startsWith('hello');
+// false
+s.endsWith('!');
+// "xx"
+'x'.repeat(2);
+
+let str = 'return ' + '`${name}`';
+let fun = new Function('name', str);
+// "jack"
+fun('jack');
+
+let str = '(name) => `hello ${name}`';
+let fun = eval.call(null, str);
+// "hello jack"
+fun('jack');
