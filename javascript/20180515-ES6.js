@@ -721,3 +721,44 @@ let str = '(name) => `hello ${name}`';
 let fun = eval.call(null, str);
 // "hello jack"
 fun('jack');
+
+let template = `
+<ul>
+	<% for(var i = 0; i < data.supllies.length; i++) { %>
+		<li><%= data.supllies[i]  %></li>
+	<% } %>
+</ul>`;
+
+function compile(template) {
+	const evalExpr = /<%=(.+?)%>/g;
+	const expr = /<%([\s\S]+?)%>/g;
+	
+	template = template.replace(evalExpr, '`); \n echo ($1) ;\n echo(`')
+	.replace(expr, '`); \n $1 \n echo(`');
+	template = 'echo(`' + template + '`);';
+	
+	let script = `(function parse(data) {
+		let outPut = '';
+		
+		function echo(html) {
+			outPut += html;
+		}
+		${template}
+		return outPut;
+	})`;
+	
+	return script;
+}
+
+let parse = eval(compile(template));
+// "
+// <ul>
+	
+		// <li>broom</li>
+	
+		// <li>mop</li>
+	
+		// <li>cleaner</li>
+	
+// </ul>"
+var outPutHtml = parse({supllies: ["broom", "mop", "cleaner"]});
