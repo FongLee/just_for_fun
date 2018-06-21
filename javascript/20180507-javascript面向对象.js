@@ -472,7 +472,7 @@ Array.from(arrayLike);
 // 除此之外，以上是在非严格模式下，如果是在严格模式下，
 // 实参和 arguments 是不会共享的
 function foo(name, age, sex, hobbit) {
-	// name1 name1
+    // name1 name1
     console.log(name, arguments[0]);
 
     name = 'new name';
@@ -495,3 +495,80 @@ function foo(name, age, sex, hobbit) {
 }
 
 foo('name1', 'age1');
+
+// 创建对象
+// 工厂模式 缺点：对象无法识别，因为所有的实例都指向一个原型
+function createPerson(name) {
+    var o = new Object();
+    o.name = name;
+    o.getName = function() {
+        console.log(this.name);
+    }
+    return o;
+}
+
+var person1 = createPerson('kevin');
+
+// 构造函数模式
+function Person(name) {
+    this.name = name;
+    this.getName = function() {
+        console.log(this.name);
+    }
+}
+
+// 优点：实例可以识别为一个特定的类型
+
+// 缺点：每次创建实例时，每个方法都要被创建一次
+var person = new Person('lifeng');
+
+// 构造函数模式优化
+function Person(name) {
+    this.name = name;
+    this.getName = getName;
+}
+
+function getName() {
+    console.log(this.name);
+}
+// 优点：解决了每个方法都要被重新创建的问题
+var person = new Person('lifeng');
+
+// 组合模式-原型模式和构造函数模式
+function Person(name) {
+    this.name = name;
+}
+
+Person.prototype = {
+    constructor: Person,
+    getName: function() {
+        console.log(this.name);
+    }
+}
+// 优点：该共享的共享，该私有的私有，使用最广泛的方式
+// 缺点：有的人就是希望全部都写在一起，即更好的封装性
+var person = new Person();
+
+// 动态原型模式
+function Person(name) {
+    this.name = name;
+    debugger;
+    if (typeof this.getName != 'function') {
+        Person.prototype = {
+            constructor: Person,
+            getName: function() {
+                console.log(this.name);
+            }
+        }
+        return new Person(name);
+    }
+
+
+    
+}
+
+var person1 = new Person('kevin');
+var person2 = new Person('daisy');
+
+person1.getName(); // kevin
+person2.getName(); // daisy
