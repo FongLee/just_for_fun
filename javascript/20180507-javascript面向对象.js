@@ -572,3 +572,17 @@ var person2 = new Person('daisy');
 
 person1.getName(); // kevin
 person2.getName(); // daisy
+
+// 稳妥构造函数模式
+function person(name) {
+	var o = new Object;
+	o.sayName = function() {
+		console.log(name);
+	}
+
+	return o;
+}
+
+var person1 = person('kevin');
+
+person1.sayName();
