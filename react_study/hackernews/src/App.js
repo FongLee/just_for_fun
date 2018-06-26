@@ -30,11 +30,11 @@ const userService = {
   }
 }
 
-function  isSearched(searchTerm) {
-    return function(item) {
-      return item.title.toLowerCase().includes(searchTerm.toLowerCase());
-    }
-} 
+
+const isSearched = searchTerm => item =>{
+  return item.title.toLowerCase().includes(searchTerm.toLowerCase());
+}
+  
 
 class App extends Component {
 
