@@ -81,7 +81,9 @@ class App extends Component {
       <div className="App">
         <Search
                 value={ searchTerm }
-                onChange={ this.onSearchChange } />
+                onChange={ this.onSearchChange }>
+          Search
+        </Search>
         <Table
                list={ list }
                pattern={ searchTerm }
@@ -92,13 +94,12 @@ class App extends Component {
 }
 
 class Search extends Component {
-  constructor(props) {
-    super(props);
-  }
+
   render() {
-    const {value, onChange} = this.props;
+    const {value, onChange, children} = this.props;
     return (
       <form>
+        { children }
         <input
                value={ value }
                onChange={ onChange } />
@@ -109,9 +110,7 @@ class Search extends Component {
 }
 
 class Table extends Component {
-  constructor(props) {
-    super(props);
-  }
+
 
   render() {
     const {list, pattern, onDismiss} = this.props;
@@ -119,25 +118,33 @@ class Table extends Component {
     return (
       <div>
         { list.filter(isSearched(pattern)).map(item => <div key={ item.objectID }>
-                                                         <span><a href={ item.url }>{ item.title }</a></span>
-                                                         <span>{ item.author }</span>
-                                                         <span>{ item.num_comments }</span>
-                                                         <span>{ item.points }</span>
-                                                         <span><button
-                                                                       onClick={ () => onDismiss(item.objectID) }
-                                                                       type="button" > Dismiss </button></span>
+                                                          <span><a href={ item.url }>{ item.title }</a></span>
+                                                          <span>{ item.author }</span>
+                                                          <span>{ item.num_comments }</span>
+                                                          <span>{ item.points }</span>
+                                                          <span>
+                                                            <Button onClick={ () => onDismiss(item.objectID) } > Dismiss 
+                                                            </Button>
+                                                          </span>
                                                        </div>
-          
-          
-          
           ) }
       </div>
-
-
     );
   }
 }
 
-
+class Button extends Component {
+  render() {
+    const {onClick, className, children} = this.props;
+    return (
+      <button
+              onClick={ onClick }
+              className={ className }
+              type="button">
+        { children }
+      </button>
+    );
+  }
+}
 
 export default App;
