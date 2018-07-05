@@ -91,12 +91,17 @@ class App extends Component {
 
   onDismiss(id) {
     debugger;
-    const updateList = this.state.list.filter(function(item) {
+
+    const updateHits = this.state.result.hits.filter(function(item) {
       return (item.objectID !== id)
     });
 
+
     this.setState({
-      list: updateList
+      result: {
+        ...this.state.result,
+        hits: updateHits
+      }
     });
   }
 
