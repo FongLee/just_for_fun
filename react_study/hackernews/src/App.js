@@ -70,7 +70,7 @@ class App extends Component {
 
     this.setSearchTopStories = this.setSearchTopStories.bind(this);
     this.fetchSearchTopStories = this.fetchSearchTopStories.bind(this);
-
+    this.onSearchSubmit = this.onSearchSubmit.bind(this);
   }
 
   setSearchTopStories(result) {
@@ -113,7 +113,12 @@ class App extends Component {
     });
   }
 
+  onSearchSubmit(event) {
+    const {searchTerm} = this.state;
 
+    this.fetchSearchTopStories(searchTerm);
+    event.preventDefault();
+  }
 
   render() {
 
@@ -128,14 +133,15 @@ class App extends Component {
         <div className="interactions">
           <Search
                   value={ searchTerm }
-                  onChange={ this.onSearchChange }>
+                  onChange={ this.onSearchChange }
+                  onSubmit={ this.onSearchSubmit }>
             Search
           </Search>
         </div>
-        <Table
-               list={ result.hits }
-               pattern={ searchTerm }
-               onDismiss={ this.onDismiss } />
+        { result &&
+          <Table
+                 list={ result.hits }
+                 onDismiss={ this.onDismiss } /> }
       </div>
     );
   }
@@ -143,28 +149,30 @@ class App extends Component {
 
 
 
-const Search = ({value, onChange, children}) => <form>
-                                                  { children }
-                                                  <input
-                                                         type="text"
-                                                         value={ value }
-                                                         onChange={ onChange } />
-                                                </form>
+const Search = ({value, onChange, onSubmit, children}) => <form onSubmit={ onSubmit }>
+                                                            <input
+                                                                   type="text"
+                                                                   value={ value }
+                                                                   onChange={ onChange } />
+                                                            <button type="submit">
+                                                              { children }
+                                                            </button>
+                                                          </form>
 
-const Table = ({list, pattern, onDismiss}) => <div className="table">
-                                                { list.filter(isSearched(pattern)).map(item => <div
-                                                                                                    key={ item.objectID }
-                                                                                                    className="table-row">
-                                                                                                 <span style={ largeColumn }><a href={ item.url }>{ item.title }</a></span>
-                                                                                                 <span style={ midColumn }>{ item.author }</span>
-                                                                                                 <span style={ smallColumn }>{ item.num_comments }</span>
-                                                                                                 <span style={ smallColumn }>{ item.points }</span>
-                                                                                                 <span style={ smallColumn }><Button
-                                                                                                                                           onClick={ () => onDismiss(item.objectID) }
-                                                                                                                                           className="button-inline"> Dismiss </Button></span>
-                                                                                               </div>
-                                                  ) }
-                                              </div>
+const Table = ({list, onDismiss}) => <div className="table">
+                                       { list.map(item => <div
+                                                               key={ item.objectID }
+                                                               className="table-row">
+                                                            <span style={ largeColumn }><a href={ item.url }>{ item.title }</a></span>
+                                                            <span style={ midColumn }>{ item.author }</span>
+                                                            <span style={ smallColumn }>{ item.num_comments }</span>
+                                                            <span style={ smallColumn }>{ item.points }</span>
+                                                            <span style={ smallColumn }><Button
+                                                                                                      onClick={ () => onDismiss(item.objectID) }
+                                                                                                      className="button-inline"> Dismiss </Button></span>
+                                                          </div>
+                                         ) }
+                                     </div>
 
 
 const Button = ({onClick, className, children}) => <button
