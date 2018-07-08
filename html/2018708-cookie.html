@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>cookie test</title>
+</head>
+<body>
+	<button onclick="click">add</button>
+	<script type="text/javascript">
+		window.onload = function() {
+			debugger;
+			window.uiid = 1;
+			if(!getCookie('UUID')) {
+				setCookie('UUID', window.uiid++);
+			}
+			
+		}
+
+		function setCookie(key, val) {
+			document.cookie =  key + '=' + val;
+ 		}
+
+ 		function clearCookie(key, val) {
+ 			setCookie(key, '');
+ 		}
+
+ 		function getCookie(key) {
+ 			var cookieArray = document.cookie.split(';');
+ 			for(var i = 0; i < cookieArray.length; i++) {
+ 				var item = cookieArray[i];
+ 				var cookieItemArray = item.split('=');
+ 				if(key === cookieItemArray[0].trim()) {
+ 					return cookieItemArray[1];
+ 				}
+ 			}
+ 			return '';
+		}
+		function click() {
+			window.uiid++;
+			setCookie('UUID', window.uiid++);
+		}
+	</script>
+</body>
+</html>
