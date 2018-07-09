@@ -1,0 +1,11 @@
+CACHE MANIFEST
+#v0.11
+
+CACHE:
+20180709-import-test.css
+
+NETWORK:
+20180709-离线存储.html
+
+FALLBACK:
+#20180709-离线存储.html 20180709-css-import.html
