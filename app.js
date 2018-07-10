@@ -17,6 +17,10 @@ app.get('/html/20180709-import-test.css', function(req, res) {
 	res.sendfile('./html/20180709-import-test.css');
 });
 
+app.get('/html/20180709-Label.html', function(req, res) {
+	res.sendfile('./html/20180709-import-test.css');
+});
+
 var server = app.listen(3000, function() {
 
 });
