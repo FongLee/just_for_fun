@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/FongLee/just_for_fun/issues"
   },
-  "homepage": "https://github.com/FongLee/just_for_fun#readme"
+  "homepage": "https://github.com/FongLee/just_for_fun#readme",
+  "dependencies": {
+    "express": "^4.16.3"
+  }
 }

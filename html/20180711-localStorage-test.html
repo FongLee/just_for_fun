@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            localStorage test
+        </title>
+    </head>
+    <body>
+        it is a localStorage test.
+        <script type="text/javascript">
+            if(window.localStorage) {
+			var storage = window.localStorage;
+
+			storage['a'] = 1;
+			storage.b =2;
+			storage.setItem('c', 3);
+			storage.removeItem('a');
+		}
+        </script>
+    </body>
+</html>

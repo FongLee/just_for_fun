@@ -2,9 +2,10 @@ var express = require('express');
 
 var app = express();
 
-app.get('/', function(req, res) {
-	res.sendfile('./html/20180709-离线存储.html');
+app.get('/index.html', function(req, res) {
+	res.sendfile('./index.html');
 });
+
 app.get('/html/20180709-css-import.html', function(req, res) {
 	res.sendfile('./html/20180709-mainfest.manifest');
 });
