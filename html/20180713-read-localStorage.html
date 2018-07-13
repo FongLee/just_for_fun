@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>read localStoage</title>
+</head>
+<body>
+	 it is a read localStorage test.
+<script type="text/javascript">
+	window.addEventListener('storage', function(event) {
+		console.log('value is ' + localStorage.getItem('c'));
+	});
+</script>
+</body>
+</html>
