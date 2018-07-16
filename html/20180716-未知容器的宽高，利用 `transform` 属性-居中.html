@@ -1,30 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>水平居中</title>
+	<title>未知容器的宽高，利用 `transform` 属性</title>
 	<style type="text/css">
 		.content {
 			position: relative;
 			width: 500px;
-			height: 300px;
+			height: 200px;
 			top: 50%;
 			left: 50%;
-			margin: -150px 0 0 -250px;
+			transform: translate(-50%, -50%);
 			background-color: pink;
 		}
 
 		.main {
-			position: relative;
 			width: 600px;
-			height: 400px;
+			height: 300px;
 			border: 1px solid;
 		}
-
 	</style>
 </head>
 <body>
 	<div class="main">
-		<div class="content">it is test</div>
+		<div class="content">it is a test</div>
 	</div>
 </body>
 </html>

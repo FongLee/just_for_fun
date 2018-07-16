@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>让绝对定位的div居中</title>
+	<style type="text/css">
+		.content {
+			position: absolute;
+			width: 300px;
+			height: 100px;
+			margin: auto;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background-color: pink;
+		}
+
+		.main {
+			position: relative;
+			width: 500px;
+			height: 200px;
+			border: 1px solid;
+		}
+	</style>
+</head>
+<body>
+	<div class="main">
+		<div class="content">it is a content</div>
+	</div>
+</body>
+</html>

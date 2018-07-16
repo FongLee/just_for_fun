@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>IE6双边距bug</title>
+	<style type="text/css">
+		body {
+			margin: 0;
+			padding: 0;
+		}
+
+		.nav {
+			float:left;
+			_display:inline ;
+			/*_这个符号只有ie6会识别*/
+			margin: 20px 0 0 20px;
+			background-color: red;
+		}
+		
+		.content {
+			float: left;
+			margin: 20px 0 0 20px;
+			background-color: blue;
+		}
+	</style>
+</head>
+<body>
+	<!-- 出现双边距的条件是当浮动元素的浮动方向和margin的方向一致时才会出现。也就是说，并不是只有块状元素左浮动，且具有左外边距时才有这个 BUG，当一个盒子右浮动的同时有一个向右的margin-right的时候，IE6也会把margin-right解析为原来的2倍。当有多个同行元素 都浮动了，而且都有同方向的margin，则只有最靠近浮动方向的元素有双边距bug。 -->
+	<div class="nav">it is nav</div>
+	<div class="content">it is content</div>
+</body>
+</html>
