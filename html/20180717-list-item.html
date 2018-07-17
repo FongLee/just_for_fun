@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>list-item</title>
+    <style type="text/css">
+    .item {
+        /*为啥没效果*/
+        display: list-item;
+    }
+	
+	/*在谷歌浏览器里，使用 collapse 值和使用 hidden 值没有什么区别。
+
+		在火狐浏览器和IE8里，使用 collapse值的效果就如它的字面意思：table的行会消失，它的下面一行会补充它的位置。效果类似于display：none。
+	*/
+    .item2 {
+    	visibility: collapse; 
+    }
+	
+	table {
+		visibility: collapse;
+	}
+
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <div class="main">
+            <div class="item">fsd</div>
+            
+            <div class="item2">fsd</div>
+        </div>
+        <ul>
+            <li>sdfs</li>
+        </ul>
+
+		<!--  该元素占据的空间还在，不显示-->
+        <table >
+        	<tr>
+        		<th>age</th>
+        		<th>sex</th>
+        	</tr>
+        </table>
+
+        <div><p>sdf</p></div>
+    </div>
+</body>
+
+</html>
