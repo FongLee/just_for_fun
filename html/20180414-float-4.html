@@ -13,13 +13,14 @@
 			
 		}
 
-		.clearfix:after{
+		.clearfix::after{
 			content: ".";
 			display: block;
 			height: 0;
 			visibility: hidden;
 			clear: both;
-
+			/*兼容ie6以下的浏览器*/
+			*zoom: 1;
 		}
 		.content img{
 			float: left;
