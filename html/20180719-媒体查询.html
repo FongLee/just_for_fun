@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>媒体查询</title>
+	<link rel="stylesheet" type="text/css" href="test.css" media="print">
+	<style type="text/css">
+		
+		body {
+			background: red;
+		}
+
+		@media screen and (max-width: 500px) {
+			body {
+				background-color: blue;
+			}
+		}
+
+		@media print {
+			body {
+				background-color: white;
+			}
+
+			p {
+				font-size: 100px;
+			}
+		}
+	</style>
+</head>
+<body>
+	<p>it is a test</p>
+</body>
+</html>
