@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>
+        全屏滚动
+    </title>
+    <style type="text/css">
+    html,
+    body {
+        height: 100%;
+        margin:0;
+    }
+	
+	.wrap {
+		height: 100%;
+	}
+    .main {
+    	height: 100%;
+    	position: relative;
+    }
+	
+    .page1 {
+       
+        background-color: red;
+    }
+
+    .page2 {
+       
+        background-color: yellow;
+    }
+
+    .page3 {
+        
+        background-color: blue;
+    }
+
+    .page4 {
+       
+        background-color: black;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <div class="main">
+            <div class="page page1">
+            </div>
+            <div class="page page2">
+            </div>
+            <div class="page page3">
+            </div>
+            <div class="page page4">
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+    var main = document.getElementsByClassName('main')[0];
+    var wrap = document.getElementsByClassName('wrap')[0];
+
+    var pages = document.getElementsByClassName('page');
+
+    var hei = document.body.clientHeight;
+    debugger;
+    for (var i = 0; i < pages.length; i++) {
+        pages[i].style.height = hei + 'px';
+    }
+
+    document.addEventListener("mousewheel", scrollPage, false);
+
+    var startTime = 0;
+    var endTime = 0;
+    var now = 0;
+    function scrollPage(event) {
+    	debugger;
+        startTime = new Date().getTime();
+        if (startTime - endTime > 1000) {
+            if (event.wheelDelta < 0 && parseInt(main.offsetTop) > -(hei * 3)) {
+                now = now - hei;
+
+                toPage(now);
+            } else if(event.wheelDelta > 0 && main.offsetTop < 0) {
+            	now = now + hei;
+            	toPage(now);
+            }
+            endTime = new Date().getTime();
+        } else {
+        	event.preventDefault();
+        }
+
+        
+    }
+
+    function toPage(now) {
+    	setTimeout(function() {
+    		debugger;
+    		main.style.top = now + 'px';
+    	}, 100);
+    }
+    </script>
+</body>
+
+</html>
