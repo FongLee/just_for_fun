@@ -14,10 +14,13 @@
 	
 	.wrap {
 		height: 100%;
+		/*这个必须设置*/
+		overflow: hidden;
 	}
     .main {
     	height: 100%;
     	position: relative;
+    	/*overflow: hidden;*/
     }
 	
     .page1 {
@@ -67,8 +70,14 @@
         pages[i].style.height = hei + 'px';
     }
 
-    document.addEventListener("mousewheel", scrollPage, false);
-
+    if(document.addEventListener) {
+    	document.addEventListener("mousewheel", scrollPage, false);
+    } else if(document.attachEvent){
+    	document.attachEvent("onmousewheel", scrollPage);
+    } else {
+    	document.onmousewheel = scrollPage;
+    }
+    
     var startTime = 0;
     var endTime = 0;
     var now = 0;
@@ -76,6 +85,7 @@
     	debugger;
         startTime = new Date().getTime();
         if (startTime - endTime > 1000) {
+        	// 向下滚动
             if (event.wheelDelta < 0 && parseInt(main.offsetTop) > -(hei * 3)) {
                 now = now - hei;
 
