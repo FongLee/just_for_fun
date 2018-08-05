@@ -25,3 +25,18 @@ function uniqueSort(array) {
 	}
 	return res;
 }
+
+function unique(array) {
+	var res = array.filter(function(item, index, array) {
+		return array.indexOf(item)  === index;
+	});
+
+	return res;
+}
+
+function uniqueSort(array) {
+	var res = array.concat().sort().filter(function(item, index, array) {
+		return index === 0 || item !== array[index-1];
+	});
+	return res;
+}
