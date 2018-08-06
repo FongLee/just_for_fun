@@ -40,3 +40,15 @@ function uniqueSort(array) {
 	});
 	return res;
 }
+
+// ES6 unique
+function unique(array) {
+	return Array.from(new Set(array));
+}
+
+var unique = (a) => [...new Set(a)];
+
+function unique(array) {
+	const seen = new Map();
+	return arr.filter((a)=>!seen.has(a) && seen.set(a, 1));
+}
